@@ -810,44 +810,126 @@ def run(source):
     }
 
 
+
+def install_cmd(skill_name):
+    """Return the install command for a skill."""
+    INSTALL_URLS = {
+        "frontend-design":        "https://raw.githubusercontent.com/anthropics/claude-skills/main/public/frontend-design/frontend-design.skill",
+        "docx":                   "https://raw.githubusercontent.com/anthropics/claude-skills/main/public/docx/docx.skill",
+        "pdf":                    "https://raw.githubusercontent.com/anthropics/claude-skills/main/public/pdf/pdf.skill",
+        "pdf-reading":            "https://raw.githubusercontent.com/anthropics/claude-skills/main/public/pdf-reading/pdf-reading.skill",
+        "pptx":                   "https://raw.githubusercontent.com/anthropics/claude-skills/main/public/pptx/pptx.skill",
+        "xlsx":                   "https://raw.githubusercontent.com/anthropics/claude-skills/main/public/xlsx/xlsx.skill",
+        "file-reading":           "https://raw.githubusercontent.com/anthropics/claude-skills/main/public/file-reading/file-reading.skill",
+        "product-self-knowledge": "https://raw.githubusercontent.com/anthropics/claude-skills/main/public/product-self-knowledge/product-self-knowledge.skill",
+        "skill-creator":          "https://raw.githubusercontent.com/anthropics/claude-skills/main/examples/skill-creator/skill-creator.skill",
+        "skill-recommender":      "https://raw.githubusercontent.com/Ganesh1110/skill-recommender/main/skill-recommender.skill",
+    }
+    COMMUNITY = {
+        "mobile":            "Not in public registry yet. Build it: use skill-creator",
+        "backend-frameworks":"Not in public registry yet. Build it: use skill-creator",
+        "devops":            "Not in public registry yet. Build it: use skill-creator",
+        "database":          "Not in public registry yet. Build it: use skill-creator",
+        "testing":           "Not in public registry yet. Build it: use skill-creator",
+        "data-analysis":     "Not in public registry yet. Build it: use skill-creator",
+        "ml-engineering":    "Not in public registry yet. Build it: use skill-creator",
+        "ai-agents":         "Not in public registry yet. Build it: use skill-creator",
+        "api-docs":          "Not in public registry yet. Build it: use skill-creator",
+    }
+    if skill_name in INSTALL_URLS:
+        url = INSTALL_URLS[skill_name]
+        fname = url.split("/")[-1]
+        return [
+            f"curl -O {url}",
+            f"# then: Claude Desktop -> Settings -> Skills -> Install -> {fname}",
+        ]
+    elif skill_name in COMMUNITY:
+        return [COMMUNITY[skill_name]]
+    return ["Check: Claude Desktop -> Settings -> Skills"]
+
+
 def pretty_print(result):
-    print("\n🔍 Detected Stack")
-    print("-" * 50)
+    W = 58
+
+    # Header
+    print()
+    print("=" * W)
+    print(f"  skill-recommender")
+    print(f"  Source: {result['source']}")
+    print("=" * W)
+
+    # Detected Stack
+    print()
+    print("  DETECTED STACK")
+    print("  " + "-" * (W - 2))
     by_cat = {}
     for s in result["signals"]:
         by_cat.setdefault(s["category"], []).append(s)
 
-    for cat, items in sorted(by_cat.items()):
-        for item in items:
-            print(f"  {cat:<16} {star(item['confidence'])}  {item['label']}")
-            print(f"  {'':16}   └─ {item['source']}")
+    if by_cat:
+        for cat, items in sorted(by_cat.items()):
+            for item in items:
+                print(f"  {cat:<18} {star(item['confidence'])}  {item['label']}")
+                print(f"  {'':<18}   \u2514\u2500 {item['source']}")
+    else:
+        print("  No stack signals detected.")
 
+    # Conflicts
     if result["conflicts"]:
-        print("\n⚠️  Conflicts Detected")
+        print()
+        print("  CONFLICTS")
+        print("  " + "-" * (W - 2))
         for c in result["conflicts"]:
-            print(f"  {c['category']}: {', '.join(c['signals'])}")
-            print(f"  → {c['resolution']}")
+            print(f"  !  {c['category']}: {', '.join(c['signals'])}")
+            print(f"     Resolution: {c['resolution']}")
 
-    print("\n═" * 50)
-    print("  Recommended Skills")
-    print("-" * 50)
-    for i, match in enumerate(result["skill_matches"], 1):
-        emoji = "✅" if match["priority"] == "Essential" else ("💡" if match["priority"] == "Helpful" else "🔧")
-        print(f"\n{i}. {match['skill']:<25} Score: {match['score']}")
-        print(f"   Priority: {emoji} {match['priority']}")
-        print(f"   Matched:  {', '.join(match['matched_triggers'])}")
-        print(f"   Why:      {match['description']}")
+    # Recommended Skills
+    print()
+    print("=" * W)
+    print("  RECOMMENDED SKILLS")
+    print("=" * W)
 
+    if not result["skill_matches"]:
+        print("  No matching skills found for this stack.")
+    else:
+        for i, match in enumerate(result["skill_matches"], 1):
+            p = match["priority"]
+            badge = "[Essential]" if p == "Essential" else "[Helpful]  " if p == "Helpful" else "[Optional] "
+            print()
+            print(f"  {i}. {match['skill']}")
+            print(f"     Priority : {badge}  Score: {match['score']}/99")
+            print(f"     Why      : {match['description']}")
+            print(f"     Matched  : {', '.join(match['matched_triggers'])}")
+            print(f"     Install  :")
+            for line in install_cmd(match["skill"]):
+                print(f"       {line}")
+            print("  " + "-" * (W - 2))
+
+    # Skill Gaps
     if result["missing_skills"]:
-        print("\n⚠️  No skill found for:")
+        print()
+        print("  SKILL GAPS")
+        print("  " + "-" * (W - 2))
         for gap in result["missing_skills"]:
-            print(f"  {gap['category']} → suggest creating '{gap['suggested_skill']}' skill")
-            print(f"  Coverage: {gap['description']}")
+            print(f"  !  No skill for: {gap['category']}")
+            print(f"     Suggested : {gap['suggested_skill']}")
+            print(f"     Covers    : {gap['description']}")
+            print(f"     Create    : run skill-creator to build '{gap['suggested_skill']}'")
 
+    # Errors
     if result["errors"]:
-        print("\n⚠️  Errors:")
+        print()
+        print("  ERRORS")
+        print("  " + "-" * (W - 2))
         for e in result["errors"]:
-            print(f"  {e}")
+            print(f"  x  {e}")
+
+    # Footer
+    print()
+    print("=" * W)
+    print(f"  {len(result['skill_matches'])} skill(s) matched  |  {len(result['missing_skills'])} gap(s) flagged")
+    print("=" * W)
+    print()
 
 
 if __name__ == "__main__":
