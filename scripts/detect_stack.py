@@ -313,17 +313,223 @@ FILE_SIGNAL_MAP = {
     "pubspec.yaml": ("Dart/Flutter", "language", 5),
     "Package.swift": ("Swift", "language", 5),
     "*.tf": ("Terraform", "infra", 5),
-    ".github/workflows": ("GitHub Actions", "ci_cd", 5),
     "Jenkinsfile": ("Jenkins CI/CD", "ci_cd", 5),
     ".circleci": ("CircleCI", "ci_cd", 5),
+}
+
+DIR_SIGNAL_MAP = {
+    ".github/workflows": ("GitHub Actions", "ci_cd", 5),
     "kubernetes": ("Kubernetes", "infra", 5),
     "k8s": ("Kubernetes", "infra", 5),
     "helm": ("Helm (K8s)", "infra", 5),
 }
 
+ARTIFACT_DIRS = {"node_modules", ".git", "__pycache__", ".venv", "venv",
+                 "target", "vendor", ".next", "dist", "build", ".cache",
+                 ".tox", ".eggs", ".pytest_cache", "bower_components", ".gitlab"}
+
+# ── User message keyword matching ─────────────────────────────────────────────
+# Sorted longest-first so "react native" matches before "react".
+# (phrase, label, category, confidence)
+USER_MESSAGE_KEYWORDS = [
+    ("react native", "React Native", "mobile", 4),
+    ("next.js", "Next.js", "framework", 4),
+    ("nextjs", "Next.js", "framework", 4),
+    ("sveltekit", "SvelteKit", "framework", 4),
+    ("machine learning", "Machine Learning", "ml", 3),
+    ("data science", "Data Science", "data_science", 3),
+    ("deep learning", "Deep Learning", "ml", 3),
+    ("data pipeline", "Data Pipeline", "data_pipeline", 3),
+    ("data analysis", "Data Analysis", "data_science", 3),
+    ("ai agent", "AI Agent", "ai", 3),
+    ("ai agents", "AI Agents", "ai", 3),
+    ("web app", "Web Application", "framework", 2),
+    ("web application", "Web Application", "framework", 2),
+    ("rest api", "REST API", "api", 2),
+    ("graphql api", "GraphQL API", "api", 2),
+    ("microservice", "Microservices", "architecture", 2),
+    ("microservices", "Microservices", "architecture", 2),
+    ("jetpack compose", "Jetpack Compose", "mobile", 4),
+    ("github actions", "GitHub Actions", "ci_cd", 4),
+    ("google cloud", "GCP", "cloud", 4),
+    ("styled-components", "Styled Components", "ui", 3),
+    ("material ui", "Material UI", "ui", 4),
+    # Languages
+    ("typescript", "TypeScript", "language", 4),
+    ("javascript", "JavaScript", "language", 4),
+    ("python", "Python", "language", 4),
+    ("golang", "Go", "language", 4),
+    ("rust", "Rust", "language", 4),
+    ("java", "Java", "language", 4),
+    ("kotlin", "Kotlin", "language", 4),
+    ("swift", "Swift", "language", 4),
+    ("ruby", "Ruby", "language", 4),
+    ("php", "PHP", "language", 4),
+    ("dart", "Dart", "language", 4),
+    ("elixir", "Elixir", "language", 4),
+    ("scala", "Scala", "language", 3),
+    ("haskell", "Haskell", "language", 3),
+    # Frameworks
+    ("react", "React", "framework", 4),
+    ("vue", "Vue", "framework", 4),
+    ("angular", "Angular", "framework", 4),
+    ("svelte", "Svelte", "framework", 4),
+    ("next", "Next.js", "framework", 4),
+    ("nuxt", "Nuxt", "framework", 4),
+    ("astro", "Astro", "framework", 4),
+    ("remix", "Remix", "framework", 4),
+    ("solid", "Solid.js", "framework", 3),
+    ("qwik", "Qwik", "framework", 3),
+    ("htmx", "HTMX", "framework", 3),
+    ("fastapi", "FastAPI", "framework", 4),
+    ("django", "Django", "framework", 4),
+    ("flask", "Flask", "framework", 4),
+    ("starlette", "Starlette", "framework", 4),
+    ("express", "Express.js", "framework", 4),
+    ("fastify", "Fastify", "framework", 4),
+    ("hono", "Hono", "framework", 4),
+    ("nestjs", "NestJS", "framework", 4),
+    ("gin", "Gin", "framework", 4),
+    ("fiber", "Fiber", "framework", 3),
+    ("actix", "Actix Web", "framework", 4),
+    ("axum", "Axum", "framework", 4),
+    ("rocket", "Rocket", "framework", 4),
+    ("phoenix", "Phoenix", "framework", 4),
+    ("rails", "Rails", "framework", 4),
+    ("laravel", "Laravel", "framework", 4),
+    ("spring", "Spring Boot", "framework", 4),
+    ("quarkus", "Quarkus", "framework", 3),
+    # UI / Styling
+    ("tailwind", "Tailwind CSS", "ui", 4),
+    ("shadcn", "shadcn/ui", "ui", 4),
+    ("bootstrap", "Bootstrap", "ui", 4),
+    ("antd", "Ant Design", "ui", 3),
+    ("chakra", "Chakra UI", "ui", 3),
+    ("emotion", "Emotion CSS-in-JS", "ui", 3),
+    # Database
+    ("postgresql", "PostgreSQL", "database", 4),
+    ("postgres", "PostgreSQL", "database", 4),
+    ("mysql", "MySQL", "database", 4),
+    ("mongodb", "MongoDB", "database", 4),
+    ("redis", "Redis", "database", 4),
+    ("sqlite", "SQLite", "database", 4),
+    ("dynamodb", "DynamoDB", "database", 3),
+    ("elasticsearch", "Elasticsearch", "database", 3),
+    ("pinecone", "Pinecone", "database", 3),
+    ("qdrant", "Qdrant", "database", 3),
+    ("chromadb", "ChromaDB", "database", 3),
+    ("prisma", "Prisma ORM", "database", 4),
+    ("sqlalchemy", "SQLAlchemy", "database", 4),
+    ("supabase", "Supabase", "database", 4),
+    ("firebase", "Firebase", "database", 4),
+    # AI / LLM
+    ("anthropic", "Anthropic SDK", "ai", 4),
+    ("claude", "Claude API", "ai", 4),
+    ("openai", "OpenAI SDK", "ai", 4),
+    ("langchain", "LangChain", "ai", 4),
+    ("llamaindex", "LlamaIndex", "ai", 4),
+    ("llama-index", "LlamaIndex", "ai", 4),
+    ("huggingface", "HuggingFace", "ai", 4),
+    ("crewai", "CrewAI", "ai", 4),
+    ("autogen", "AutoGen", "ai", 4),
+    ("langgraph", "LangGraph", "ai", 4),
+    ("dspy", "DSPy", "ai", 3),
+    ("ollama", "Ollama", "ai", 3),
+    ("vllm", "vLLM", "ai", 3),
+    # Build / Infra
+    ("docker", "Docker", "devops", 4),
+    ("kubernetes", "Kubernetes", "infra", 4),
+    ("k8s", "Kubernetes", "infra", 4),
+    ("terraform", "Terraform", "infra", 4),
+    ("pulumi", "Pulumi", "infra", 3),
+    ("helm", "Helm", "infra", 4),
+    ("circleci", "CircleCI", "ci_cd", 3),
+    ("jenkins", "Jenkins", "ci_cd", 4),
+    ("argocd", "ArgoCD", "infra", 3),
+    # Cloud
+    ("vercel", "Vercel", "cloud", 4),
+    ("netlify", "Netlify", "cloud", 3),
+    ("fly.io", "Fly.io", "cloud", 3),
+    ("cloudflare", "Cloudflare", "cloud", 3),
+    ("railway", "Railway", "cloud", 3),
+    # Testing
+    ("jest", "Jest", "testing", 4),
+    ("vitest", "Vitest", "testing", 4),
+    ("playwright", "Playwright", "testing", 4),
+    ("cypress", "Cypress", "testing", 4),
+    ("pytest", "pytest", "testing", 4),
+    ("mocha", "Mocha", "testing", 3),
+    ("storybook", "Storybook", "testing", 3),
+    # API
+    ("graphql", "GraphQL", "api", 4),
+    ("trpc", "tRPC", "api", 4),
+    ("grpc", "gRPC", "api", 3),
+    ("websocket", "WebSocket", "api", 3),
+    # Mobile
+    ("expo", "Expo", "mobile", 4),
+    ("capacitor", "Capacitor", "mobile", 3),
+    ("ionic", "Ionic", "mobile", 3),
+    ("flutter", "Flutter", "mobile", 4),
+    ("swiftui", "SwiftUI", "mobile", 4),
+    # Deliverables
+    ("pdf", "PDF generation", "deliverable_pdf", 3),
+    ("docx", "Word document", "deliverable_docx", 3),
+    ("xlsx", "Excel spreadsheet", "deliverable_xlsx", 3),
+    ("pptx", "PowerPoint", "deliverable_pptx", 3),
+    ("word", "Word document", "deliverable_docx", 2),
+    ("excel", "Excel spreadsheet", "deliverable_xlsx", 2),
+    ("powerpoint", "PowerPoint", "deliverable_pptx", 2),
+    ("spreadsheet", "Spreadsheet", "deliverable_xlsx", 2),
+    ("slides", "Slides", "deliverable_pptx", 2),
+    # Category descriptions (vague — low confidence)
+    ("frontend", "Frontend", "ui", 2),
+    ("front-end", "Frontend", "ui", 2),
+    ("backend", "Backend", "framework", 2),
+    ("back-end", "Backend", "framework", 2),
+    ("fullstack", "Full-stack", "framework", 2),
+    ("full-stack", "Full-stack", "framework", 2),
+    ("database", "Database", "database", 2),
+    ("devops", "DevOps", "devops", 2),
+    ("ci/cd", "CI/CD", "ci_cd", 2),
+    ("cloud", "Cloud", "cloud", 2),
+    ("mobile", "Mobile", "mobile", 2),
+    ("desktop", "Desktop", "framework", 2),
+    ("server", "Server", "framework", 1),
+    ("web", "Web", "framework", 1),
+    ("app", "Application", "framework", 1),
+    ("ai", "AI/LLM", "ai", 2),
+    ("ml", "Machine Learning", "ml", 2),
+    ("llm", "LLM", "ai", 2),
+    ("go", "Go", "language", 3),
+]
+
 
 def star(n):
     return "★" * n + "☆" * (5 - n)
+
+
+def parse_user_message(message):
+    """Extract tech stack signals from a natural language user message.
+
+    Matches against known keywords sorted longest-first so multi-word
+    phrases like "react native" match before single-word "react".
+    Returns a list of signal dicts with source='user_message'.
+    """
+    signals = []
+    text = message.lower()
+    matched_labels = set()
+
+    for phrase, label, category, confidence in USER_MESSAGE_KEYWORDS:
+        if phrase in text and label not in matched_labels:
+            matched_labels.add(label)
+            signals.append({
+                "label": label,
+                "category": category,
+                "confidence": confidence,
+                "source": f"user_message",
+            })
+
+    return signals
 
 
 def parse_package_json(content):
@@ -594,6 +800,17 @@ def parse_dockerfile(content):
     return signals, errors
 
 
+def _rel_path(base, target):
+    try:
+        return target.relative_to(base)
+    except ValueError:
+        return target
+
+
+def _in_artifact_dir(path):
+    return any(part in ARTIFACT_DIRS for part in path.parts)
+
+
 def scan_directory(path):
     """Scan a directory for known config files and aggregate signals."""
     signals = []
@@ -601,22 +818,41 @@ def scan_directory(path):
     conflicts = []
     p = Path(path)
 
+    # File-based existence signals (e.g., go.mod → Go language)
     for filename, (label, category, confidence) in FILE_SIGNAL_MAP.items():
         if "*" in filename:
-            matches = list(p.rglob(filename))
+            for match in p.rglob(filename):
+                signals.append({
+                    "label": label,
+                    "category": category,
+                    "confidence": confidence,
+                    "source": str(_rel_path(p, match))
+                })
+                break
         else:
-            matches = [p / filename] if (p / filename).exists() else []
-            if not matches:
-                matches = list(p.rglob(filename))
-        for match in matches[:1]:
-            signals.append({
-                "label": label,
-                "category": category,
-                "confidence": confidence,
-                "source": str(match.relative_to(p) if p in match.parents else match)
-            })
+            for match in p.rglob(filename):
+                if not _in_artifact_dir(match):
+                    signals.append({
+                        "label": label,
+                        "category": category,
+                        "confidence": confidence,
+                        "source": str(_rel_path(p, match))
+                    })
+                    break
 
-    # Parse known config files
+    # Directory-based signals (e.g., .github/workflows → GitHub Actions)
+    for dirname, (label, category, confidence) in DIR_SIGNAL_MAP.items():
+        for match in p.rglob(dirname):
+            if match.is_dir() and not _in_artifact_dir(match):
+                signals.append({
+                    "label": label,
+                    "category": category,
+                    "confidence": confidence,
+                    "source": str(_rel_path(p, match))
+                })
+                break
+
+    # Parse known config files across all subdirectories
     for fname, parser in [
         ("package.json", parse_package_json),
         ("package-lock.json", parse_package_lock),
@@ -632,15 +868,19 @@ def scan_directory(path):
         ("docker-compose.yml", parse_dockerfile),
         ("docker-compose.yaml", parse_dockerfile),
     ]:
-        fpath = p / fname
-        if fpath.exists():
+        for fpath in sorted(p.rglob(fname)):
+            if _in_artifact_dir(fpath):
+                continue
             try:
                 content = fpath.read_text(encoding="utf-8", errors="replace")
                 s, e = parser(content)
+                rel = _rel_path(p, fpath)
+                for signal in s:
+                    signal["source"] = f"{rel} › {signal['source'].split(' › ', 1)[-1]}"
                 signals.extend(s)
                 errors.extend(e)
             except Exception as ex:
-                errors.append(f"Could not read {fname}: {ex}")
+                errors.append(f"Could not read {fname} at {_rel_path(p, fpath)}: {ex}")
 
     return signals, errors, conflicts
 
@@ -726,82 +966,86 @@ def detect_missing_skills(signals):
     return gaps
 
 
-def run(source):
-    p = Path(source)
+def run(source=None, user_message=None):
     signals, errors, conflicts = [], [], []
 
-    if p.is_dir():
-        signals, errors, conflicts = scan_directory(p)
-    elif p.is_file():
-        content = p.read_text(encoding="utf-8", errors="replace")
-        name = p.name
-        # Detect by exact name first, then by content heuristics
-        if name == "package.json" or (name.endswith(".json") and '"dependencies"' in content):
-            signals, errors = parse_package_json(content)
-        elif name == "requirements.txt" or (name.endswith(".txt") and re.search(r'^[a-zA-Z0-9_\-]+(==|>=|<=|~=|!=|\[)', content, re.MULTILINE)):
-            signals, errors = parse_requirements(content)
-        elif name == "pyproject.toml" or name.endswith(".toml"):
-            signals, errors = parse_pyproject(content)
-        elif name == "package-lock.json":
-            signals, errors = parse_package_lock(content)
-        elif name == "Pipfile":
-            signals, errors = parse_pipfile(content)
-        elif name == "composer.json":
-            signals, errors = parse_composer_json(content)
-        elif name == "pubspec.yaml":
-            signals, errors = parse_pubspec_yaml(content)
-        elif name == "go.mod":
-            signals, errors = parse_go_mod(content)
-        elif name == "Cargo.toml":
-            signals, errors = parse_cargo_toml(content)
-        elif name == "pom.xml":
-            signals, errors = parse_pom_xml(content)
-        elif name in ("Dockerfile", "docker-compose.yml", "docker-compose.yaml") or "FROM " in content or "services:" in content:
-            signals, errors = parse_dockerfile(content)
-        else:
-            # Try all parsers, pick the one that finds most signals
-            best_signals, best_errors = [], []
-            for parser in [
-                parse_package_json,
-                parse_package_lock,
-                parse_pipfile,
-                parse_requirements,
-                parse_pyproject,
-                parse_composer_json,
-                parse_pubspec_yaml,
-                parse_go_mod,
-                parse_cargo_toml,
-                parse_pom_xml,
-                parse_dockerfile,
-            ]:
-                try:
-                    s, e = parser(content)
-                    if len(s) > len(best_signals):
-                        best_signals, best_errors = s, e
-                except Exception:
-                    pass
-            if best_signals:
-                signals, errors = best_signals, best_errors
+    if source:
+        p = Path(source)
+        if p.is_dir():
+            signals, errors, conflicts = scan_directory(p)
+        elif p.is_file():
+            content = p.read_text(encoding="utf-8", errors="replace")
+            name = p.name
+            # Detect by exact name first, then by content heuristics
+            if name == "package.json" or (name.endswith(".json") and '"dependencies"' in content):
+                signals, errors = parse_package_json(content)
+            elif name == "requirements.txt" or (name.endswith(".txt") and re.search(r'^[a-zA-Z0-9_\-]+(==|>=|<=|~=|!=|\[)', content, re.MULTILINE)):
+                signals, errors = parse_requirements(content)
+            elif name == "pyproject.toml" or name.endswith(".toml"):
+                signals, errors = parse_pyproject(content)
+            elif name == "package-lock.json":
+                signals, errors = parse_package_lock(content)
+            elif name == "Pipfile":
+                signals, errors = parse_pipfile(content)
+            elif name == "composer.json":
+                signals, errors = parse_composer_json(content)
+            elif name == "pubspec.yaml":
+                signals, errors = parse_pubspec_yaml(content)
+            elif name == "go.mod":
+                signals, errors = parse_go_mod(content)
+            elif name == "Cargo.toml":
+                signals, errors = parse_cargo_toml(content)
+            elif name == "pom.xml":
+                signals, errors = parse_pom_xml(content)
+            elif name in ("Dockerfile", "docker-compose.yml", "docker-compose.yaml") or "FROM " in content or "services:" in content:
+                signals, errors = parse_dockerfile(content)
             else:
-                errors.append(f"Unrecognized file type: {name}")
-    else:
-        errors.append(f"Path not found: {source}")
+                # Try all parsers, pick the one that finds most signals
+                best_signals, best_errors = [], []
+                for parser in [
+                    parse_package_json,
+                    parse_package_lock,
+                    parse_pipfile,
+                    parse_requirements,
+                    parse_pyproject,
+                    parse_composer_json,
+                    parse_pubspec_yaml,
+                    parse_go_mod,
+                    parse_cargo_toml,
+                    parse_pom_xml,
+                    parse_dockerfile,
+                ]:
+                    try:
+                        s, e = parser(content)
+                        if len(s) > len(best_signals):
+                            best_signals, best_errors = s, e
+                    except Exception:
+                        pass
+                if best_signals:
+                    signals, errors = best_signals, best_errors
+                else:
+                    errors.append(f"Unrecognized file type: {name}")
+        else:
+            errors.append(f"Path not found: {source}")
+
+    if user_message:
+        msg_signals = parse_user_message(user_message)
+        signals.extend(msg_signals)
 
     conflicts = detect_conflicts(signals)
     skill_matches = match_skills(signals)
     missing = detect_missing_skills(signals)
 
-    # Deduplicate signals by label
-    seen = set()
-    unique_signals = []
+    # Deduplicate signals by label + category (keep highest confidence)
+    seen = {}
     for s in signals:
         key = s["label"] + s["category"]
-        if key not in seen:
-            seen.add(key)
-            unique_signals.append(s)
+        if key not in seen or s["confidence"] > seen[key]["confidence"]:
+            seen[key] = s
+    unique_signals = list(seen.values())
 
     return {
-        "source": str(source),
+        "source": source or "(user message)",
         "signals": unique_signals,
         "conflicts": conflicts,
         "skill_matches": skill_matches,
@@ -934,14 +1178,50 @@ def pretty_print(result):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python detect_stack.py <file_or_directory>")
+        print("Usage: python detect_stack.py <file_or_directory> [options]")
+        print("       python detect_stack.py --message \"I'm building a React app\"")
+        print("       echo \"I need Python ML\" | python detect_stack.py --stdin")
+        print("")
+        print("Options:")
+        print("  --message TEXT   Augment detection with a user message")
+        print("  --stdin          Read user message from stdin")
+        print("  --json           Output JSON instead of pretty-print")
         sys.exit(1)
 
-    source = sys.argv[1]
+    source = None
+    user_message = None
+    as_json = "--json" in sys.argv
+    use_stdin = "--stdin" in sys.argv
 
-    if "--json" in sys.argv:
-        result = run(source)
+    # Extract --message argument
+    if "--message" in sys.argv:
+        msg_idx = sys.argv.index("--message") + 1
+        if msg_idx < len(sys.argv) and not sys.argv[msg_idx].startswith("--"):
+            user_message = sys.argv[msg_idx]
+
+    if use_stdin:
+        user_message = sys.stdin.read().strip()
+
+    # Determine source path (first positional arg that isn't a flag or --message's value)
+    i = 1
+    while i < len(sys.argv):
+        arg = sys.argv[i]
+        if arg == "--message":
+            i += 2  # skip --message and its value
+            continue
+        if arg.startswith("--"):
+            i += 1
+            continue
+        source = arg
+        break
+
+    if not source and not user_message:
+        print("Error: provide a file/directory path or --message/--stdin", file=sys.stderr)
+        sys.exit(1)
+
+    result = run(source, user_message)
+
+    if as_json:
         print(json.dumps(result, indent=2))
     else:
-        result = run(source)
         pretty_print(result)

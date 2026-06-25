@@ -20,6 +20,7 @@ import json
 import subprocess
 import tempfile
 import os
+import shutil
 from pathlib import Path
 
 DETECT_SCRIPT = Path(__file__).parent / "detect_stack.py"
@@ -155,12 +156,161 @@ TEST_CASES = [
         "expected_skills": [],
         "forbidden_skills": ["pptx", "docx"],
         "expected_priority": {}
-    }
+    },
+    {
+        "name": "directory_signals",
+        "description": "Project with CI/CD and infra directories detected",
+        "input_type": "directory",
+        "input": {
+            ".github/workflows/ci.yml": "name: CI\non: push\n",
+            ".github/workflows/deploy.yml": "name: Deploy\non: push\n",
+            "kubernetes/deployment.yaml": "apiVersion: apps/v1\nkind: Deployment\n",
+            "helm/values.yaml": "replicaCount: 3\n",
+            "Dockerfile": "FROM python:3.12\n",
+        },
+        "expected_signals": ["GitHub Actions", "Kubernetes", "Helm (K8s)"],
+        "expected_skills": ["devops"],
+        "forbidden_skills": [],
+        "expected_priority": {}
+    },
+    {
+        "name": "monorepo_multi",
+        "description": "Monorepo with web (React) and api (Fastify) sub-projects",
+        "input_type": "directory",
+        "input": {
+            "apps/web/package.json": json.dumps({
+                "dependencies": {"react": "^18.0.0", "next": "^14.0.0"}
+            }),
+            "apps/api/package.json": json.dumps({
+                "dependencies": {"fastify": "^4.0.0"}
+            }),
+            "package.json": json.dumps({
+                "private": True,
+                "workspaces": ["apps/*"]
+            }),
+        },
+        "expected_signals": ["React", "Next.js", "Fastify", "npm/yarn workspaces (monorepo)"],
+        "expected_skills": ["frontend-design", "backend-frameworks"],
+        "forbidden_skills": [],
+        "expected_priority": {}
+    },
+    {
+        "name": "node_modules_exclusion",
+        "description": "node_modules package.json should NOT be parsed",
+        "input_type": "directory",
+        "input": {
+            "package.json": json.dumps({
+                "dependencies": {"react": "^18.0.0"}
+            }),
+            "node_modules/vue/package.json": json.dumps({
+                "dependencies": {"vue": "^3.0.0"}
+            }),
+            ".git/config": "dummy config",
+        },
+        "expected_signals": ["React"],
+        "forbidden_signals": ["Vue"],
+        "expected_skills": ["frontend-design"],
+        "forbidden_skills": [],
+        "expected_priority": {}
+    },
+    {
+        "name": "user_message_explicit",
+        "description": "User message with explicit framework names",
+        "input_type": "user_message",
+        "input": "I'm building a React app with Tailwind CSS and I need PostgreSQL",
+        "expected_signals": ["React", "Tailwind CSS", "PostgreSQL"],
+        "expected_skills": ["frontend-design", "database"],
+        "forbidden_skills": [],
+        "expected_priority": {}
+    },
+    {
+        "name": "user_message_vague",
+        "description": "User message with vague category descriptions",
+        "input_type": "user_message",
+        "input": "I need a frontend for a web app",
+        "expected_signals": ["Frontend"],
+        "expected_skills": [],
+        "forbidden_skills": [],
+        "expected_priority": {}
+    },
+    {
+        "name": "user_message_ml",
+        "description": "User message describing ML project",
+        "input_type": "user_message",
+        "input": "I'm building a machine learning pipeline with Python and FastAPI",
+        "expected_signals": ["Python", "FastAPI", "Machine Learning"],
+        "expected_skills": ["backend-frameworks"],
+        "forbidden_skills": [],
+        "expected_priority": {}
+    },
+    {
+        "name": "user_message_with_file",
+        "description": "User message combined with a config file",
+        "input_type": "user_message_with_file",
+        "file_content": json.dumps({
+            "dependencies": {"react": "^18.0.0", "next": "^14.0.0"}
+        }),
+        "message": "I need Docker and PostgreSQL for deployment",
+        "expected_signals": ["React", "Next.js", "Docker", "PostgreSQL"],
+        "expected_skills": ["frontend-design", "devops", "database"],
+        "forbidden_skills": [],
+        "expected_priority": {}
+    },
 ]
 
 
 def run_detection(test_case):
     """Run detect_stack.py against a test case, return parsed JSON result."""
+
+    if test_case["input_type"] == "directory":
+        tmp_dir = Path(tempfile.mkdtemp())
+        try:
+            for filepath, content in test_case["input"].items():
+                full_path = tmp_dir / filepath
+                full_path.parent.mkdir(parents=True, exist_ok=True)
+                full_path.write_text(content, encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, str(DETECT_SCRIPT), str(tmp_dir), "--json"],
+                capture_output=True, text=True, timeout=30
+            )
+            if result.returncode != 0:
+                return None, result.stderr
+            return json.loads(result.stdout), None
+        except Exception as e:
+            return None, str(e)
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    if test_case["input_type"] == "user_message":
+        try:
+            result = subprocess.run(
+                [sys.executable, str(DETECT_SCRIPT),
+                 "--message", test_case["input"], "--json"],
+                capture_output=True, text=True, timeout=30
+            )
+            if result.returncode != 0:
+                return None, result.stderr
+            return json.loads(result.stdout), None
+        except Exception as e:
+            return None, str(e)
+
+    if test_case["input_type"] == "user_message_with_file":
+        tmp_path = Path(tempfile.mktemp(suffix=".json"))
+        try:
+            tmp_path.write_text(test_case["file_content"], encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, str(DETECT_SCRIPT), str(tmp_path),
+                 "--message", test_case["message"], "--json"],
+                capture_output=True, text=True, timeout=30
+            )
+            if result.returncode != 0:
+                return None, result.stderr
+            return json.loads(result.stdout), None
+        except Exception as e:
+            return None, str(e)
+        finally:
+            tmp_path.unlink(missing_ok=True)
+
     suffix_map = {
         "package_json": "package.json",
         "requirements": "requirements.txt",
@@ -205,9 +355,26 @@ def score_test(test_case, detection_result):
         m["skill"]: m["priority"]
         for m in detection_result.get("skill_matches", [])
     }
+    detected_labels = {s["label"] for s in detection_result.get("signals", [])}
 
     details = []
     score = 100
+
+    # Check expected signals present
+    for signal in test_case.get("expected_signals", []):
+        if signal in detected_labels:
+            details.append(f"  ✅ Expected signal found: {signal}")
+        else:
+            details.append(f"  ❌ Expected signal MISSING: {signal}")
+            score -= 15
+
+    # Check forbidden signals absent
+    for signal in test_case.get("forbidden_signals", []):
+        if signal not in detected_labels:
+            details.append(f"  ✅ Forbidden signal correctly absent: {signal}")
+        else:
+            details.append(f"  ❌ Forbidden signal incorrectly present: {signal}")
+            score -= 15
 
     # Check expected skills present
     for skill in test_case.get("expected_skills", []):
