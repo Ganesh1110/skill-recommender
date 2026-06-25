@@ -1,0 +1,21 @@
+{
+  "fingerprint": "e3b0c44298fc1c149afbf4c8996fb924",
+  "result": [
+    [
+      {
+        "label": "Python",
+        "category": "language",
+        "confidence": 4,
+        "source": "scripts/run_tests.py"
+      },
+      {
+        "label": "GitHub Actions",
+        "category": "ci_cd",
+        "confidence": 5,
+        "source": ".github/workflows"
+      }
+    ],
+    [],
+    []
+  ]
+}

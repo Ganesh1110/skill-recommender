@@ -1,0 +1,262 @@
+{
+  "next": [
+    "Next.js",
+    "framework",
+    5
+  ],
+  "react": [
+    "React",
+    "framework",
+    5
+  ],
+  "react-dom": [
+    "React",
+    "framework",
+    5
+  ],
+  "expo": [
+    "Expo / React Native",
+    "framework",
+    5
+  ],
+  "react-native": [
+    "React Native",
+    "framework",
+    5
+  ],
+  "vue": [
+    "Vue",
+    "framework",
+    5
+  ],
+  "nuxt": [
+    "Nuxt",
+    "framework",
+    5
+  ],
+  "@angular/core": [
+    "Angular",
+    "framework",
+    5
+  ],
+  "svelte": [
+    "Svelte",
+    "framework",
+    5
+  ],
+  "@sveltejs/kit": [
+    "SvelteKit",
+    "framework",
+    5
+  ],
+  "vite": [
+    "Vite",
+    "build_tool",
+    5
+  ],
+  "electron": [
+    "Electron (desktop)",
+    "framework",
+    5
+  ],
+  "tailwindcss": [
+    "Tailwind CSS",
+    "ui",
+    5
+  ],
+  "shadcn-ui": [
+    "shadcn/ui",
+    "ui",
+    5
+  ],
+  "@radix-ui/react-dialog": [
+    "Radix UI",
+    "ui",
+    5
+  ],
+  "@mui/material": [
+    "Material UI",
+    "ui",
+    5
+  ],
+  "bootstrap": [
+    "Bootstrap",
+    "ui",
+    4
+  ],
+  "@emotion/react": [
+    "Emotion CSS-in-JS",
+    "ui",
+    4
+  ],
+  "styled-components": [
+    "Styled Components",
+    "ui",
+    4
+  ],
+  "express": [
+    "Express.js",
+    "framework",
+    5
+  ],
+  "fastify": [
+    "Fastify",
+    "framework",
+    5
+  ],
+  "hono": [
+    "Hono",
+    "framework",
+    5
+  ],
+  "@nestjs/core": [
+    "NestJS",
+    "framework",
+    5
+  ],
+  "graphql": [
+    "GraphQL",
+    "api",
+    5
+  ],
+  "@apollo/server": [
+    "Apollo GraphQL",
+    "api",
+    5
+  ],
+  "@trpc/server": [
+    "tRPC",
+    "api",
+    5
+  ],
+  "prisma": [
+    "Prisma ORM",
+    "database",
+    5
+  ],
+  "drizzle-orm": [
+    "Drizzle ORM",
+    "database",
+    5
+  ],
+  "@supabase/supabase-js": [
+    "Supabase",
+    "database",
+    5
+  ],
+  "mongoose": [
+    "MongoDB (Mongoose)",
+    "database",
+    5
+  ],
+  "pg": [
+    "PostgreSQL",
+    "database",
+    4
+  ],
+  "mysql2": [
+    "MySQL",
+    "database",
+    4
+  ],
+  "openai": [
+    "OpenAI SDK",
+    "ai",
+    5
+  ],
+  "@anthropic-ai/sdk": [
+    "Anthropic SDK",
+    "ai",
+    5
+  ],
+  "langchain": [
+    "LangChain",
+    "ai",
+    5
+  ],
+  "@langchain/core": [
+    "LangChain",
+    "ai",
+    5
+  ],
+  "llamaindex": [
+    "LlamaIndex",
+    "ai",
+    5
+  ],
+  "ai": [
+    "Vercel AI SDK",
+    "ai",
+    5
+  ],
+  "jest": [
+    "Jest",
+    "testing",
+    5
+  ],
+  "vitest": [
+    "Vitest",
+    "testing",
+    5
+  ],
+  "playwright": [
+    "Playwright (E2E)",
+    "testing",
+    5
+  ],
+  "cypress": [
+    "Cypress (E2E)",
+    "testing",
+    5
+  ],
+  "mocha": [
+    "Mocha",
+    "testing",
+    4
+  ],
+  "@testing-library/react": [
+    "React Testing Library",
+    "testing",
+    5
+  ],
+  "turbo": [
+    "Turborepo",
+    "build_tool",
+    5
+  ],
+  "nx": [
+    "Nx monorepo",
+    "build_tool",
+    5
+  ],
+  "webpack": [
+    "Webpack",
+    "build_tool",
+    4
+  ],
+  "rollup": [
+    "Rollup",
+    "build_tool",
+    4
+  ],
+  "parcel": [
+    "Parcel",
+    "build_tool",
+    4
+  ],
+  "rspack": [
+    "Rspack",
+    "build_tool",
+    4
+  ],
+  "capacitor": [
+    "Capacitor",
+    "framework",
+    5
+  ],
+  "@ionic/react": [
+    "Ionic",
+    "framework",
+    5
+  ]
+}

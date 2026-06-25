@@ -1,0 +1,17 @@
+{
+  "github.com/gin-gonic/gin": [
+    "Gin",
+    "framework",
+    5
+  ],
+  "github.com/labstack/echo": [
+    "Echo",
+    "framework",
+    5
+  ],
+  "github.com/gofiber/fiber": [
+    "Fiber",
+    "framework",
+    5
+  ]
+}

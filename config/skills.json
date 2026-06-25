@@ -1,0 +1,319 @@
+{
+  "frontend-design": {
+    "triggers": [
+      "react",
+      "vue",
+      "angular",
+      "svelte",
+      "astro",
+      "solid",
+      "qwik",
+      "html",
+      "css",
+      "tailwind",
+      "component",
+      "ui",
+      "dashboard",
+      "form",
+      "widget",
+      "next.js",
+      "nuxt",
+      "sveltekit",
+      "shadcn",
+      "radix",
+      "chakra",
+      "material-ui",
+      "bootstrap",
+      "emotion",
+      "styled-components",
+      "vite",
+      "webpack",
+      "astro.config",
+      "remix"
+    ],
+    "description": "UI/UX design tokens, component patterns, Tailwind, React/Vue"
+  },
+  "backend-frameworks": {
+    "triggers": [
+      "express",
+      "fastify",
+      "hono",
+      "nestjs",
+      "apollo",
+      "trpc",
+      "spring",
+      "spring boot",
+      "django",
+      "flask",
+      "fastapi",
+      "starlette",
+      "gin",
+      "fiber",
+      "actix",
+      "rocket",
+      "phoenix",
+      "laravel"
+    ],
+    "description": "Backend framework and API service patterns"
+  },
+  "database": {
+    "triggers": [
+      "postgres",
+      "mysql",
+      "mongodb",
+      "redis",
+      "sqlite",
+      "dynamodb",
+      "elastic",
+      "cassandra",
+      "clickhouse",
+      "pinecone",
+      "qdrant",
+      "weaviate",
+      "chromadb",
+      "pgvector",
+      "prisma",
+      "sqlalchemy",
+      "mongoose"
+    ],
+    "description": "Database access, schema design, and persistence"
+  },
+  "data-analysis": {
+    "triggers": [
+      "pandas",
+      "numpy",
+      "polars",
+      "matplotlib",
+      "seaborn",
+      "plotly",
+      "jupyter",
+      "notebook",
+      "dataframe",
+      "visualization",
+      "eda"
+    ],
+    "description": "Data analysis, visualization, and exploratory workflows"
+  },
+  "ml-engineering": {
+    "triggers": [
+      "scikit-learn",
+      "torch",
+      "tensorflow",
+      "keras",
+      "xgboost",
+      "catboost",
+      "lightgbm",
+      "transformers",
+      "huggingface",
+      "training",
+      "model",
+      "inference"
+    ],
+    "description": "Machine learning model training, evaluation, and deployment"
+  },
+  "testing": {
+    "triggers": [
+      "jest",
+      "vitest",
+      "mocha",
+      "playwright",
+      "cypress",
+      "pytest",
+      "unittest",
+      "junit",
+      "rspec",
+      "go test",
+      "test coverage",
+      "testing library",
+      "selenium",
+      "storybook"
+    ],
+    "description": "Automated testing, coverage, and test strategy"
+  },
+  "devops": {
+    "triggers": [
+      "docker",
+      "docker-compose",
+      "kubernetes",
+      "helm",
+      "terraform",
+      "pulumi",
+      "github actions",
+      "circleci",
+      "jenkins",
+      "argocd",
+      "aws cdk",
+      "cloudformation",
+      "ci/cd",
+      "deployment"
+    ],
+    "description": "Infrastructure, deployment automation, and CI/CD"
+  },
+  "mobile": {
+    "triggers": [
+      "react native",
+      "expo",
+      "flutter",
+      "swiftui",
+      "jetpack compose",
+      "kotlin multiplatform",
+      "capacitor",
+      "ionic",
+      "xcode",
+      "apk",
+      "ipa"
+    ],
+    "description": "Mobile and cross-platform app development"
+  },
+  "api-docs": {
+    "triggers": [
+      "swagger",
+      "openapi",
+      "api docs",
+      "postman",
+      "raml",
+      "graphql schema",
+      "asyncapi",
+      "api documentation"
+    ],
+    "description": "API documentation, spec generation, and contract design"
+  },
+  "ai-agents": {
+    "triggers": [
+      "autogen",
+      "crewai",
+      "langgraph",
+      "pydantic-ai",
+      "semantic kernel",
+      "agents",
+      "agent",
+      "orchestration",
+      "workflow"
+    ],
+    "description": "AI agent orchestration and multi-agent workflows"
+  },
+  "docx": {
+    "triggers": [
+      "report",
+      "memo",
+      "letter",
+      "proposal",
+      "word",
+      ".docx",
+      "document",
+      "word document",
+      "ms word",
+      "python-docx",
+      "deliverable_docx",
+      "word generation",
+      "docx generation"
+    ],
+    "description": "Create/edit Word documents (.docx)"
+  },
+  "pdf": {
+    "triggers": [
+      "pdf",
+      "certificate",
+      "fillable form",
+      "merge pdf",
+      "watermark",
+      "reportlab",
+      "weasyprint",
+      "fpdf",
+      "pdfkit",
+      "deliverable_pdf",
+      "pdf generation",
+      "pdf export"
+    ],
+    "description": "Create, merge, fill, or watermark PDFs"
+  },
+  "pdf-reading": {
+    "triggers": [
+      "read pdf",
+      "extract pdf",
+      "parse pdf",
+      "pymupdf",
+      "pdfplumber",
+      "pypdf",
+      "pdf2text",
+      "ocr",
+      "deliverable_pdf_read",
+      "pdf extraction"
+    ],
+    "description": "Extract text/tables/images from existing PDFs"
+  },
+  "pptx": {
+    "triggers": [
+      "slides",
+      "deck",
+      "presentation",
+      "powerpoint",
+      ".pptx",
+      "pptxgenjs",
+      "python-pptx",
+      "slidev",
+      "deliverable_pptx",
+      "presentation generation"
+    ],
+    "description": "Build or edit PowerPoint presentations"
+  },
+  "xlsx": {
+    "triggers": [
+      "spreadsheet",
+      "excel",
+      "budget",
+      "tracker",
+      ".xlsx",
+      ".csv",
+      "financial model",
+      "openpyxl",
+      "xlsxwriter",
+      "sheetjs",
+      "papaparse",
+      "deliverable_xlsx",
+      "excel generation"
+    ],
+    "description": "Spreadsheets, financial models, data tables"
+  },
+  "file-reading": {
+    "triggers": [
+      "uploaded file",
+      "read this file",
+      "extract from file",
+      "parse file",
+      "file upload",
+      "multipart"
+    ],
+    "description": "Route-aware reader for any uploaded file type"
+  },
+  "product-self-knowledge": {
+    "triggers": [
+      "anthropic",
+      "claude api",
+      "@anthropic-ai/sdk",
+      "claude sdk",
+      "model name",
+      "rate limit",
+      "pricing",
+      "claude plan",
+      "openai",
+      "langchain",
+      "llama-index",
+      "llamaindex",
+      "ai sdk"
+    ],
+    "description": "Accurate Claude/Anthropic API details, model names, pricing"
+  },
+  "skill-creator": {
+    "triggers": [
+      "create a skill",
+      "edit skill",
+      "build skill",
+      "eval skill",
+      "skill performance",
+      "skill.md",
+      ".skill"
+    ],
+    "description": "Create, test, iterate, and package skills"
+  }
+}

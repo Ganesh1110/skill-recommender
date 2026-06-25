@@ -1,0 +1,12 @@
+{
+  "laravel/framework": [
+    "Laravel",
+    "framework",
+    5
+  ],
+  "symfony/symfony": [
+    "Symfony",
+    "framework",
+    5
+  ]
+}

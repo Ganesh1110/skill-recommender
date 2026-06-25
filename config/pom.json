@@ -1,0 +1,22 @@
+{
+  "org.springframework.boot:spring-boot-starter-web": [
+    "Spring Boot",
+    "framework",
+    5
+  ],
+  "org.springframework.boot:spring-boot-starter-data-jpa": [
+    "Spring Boot Data",
+    "framework",
+    5
+  ],
+  "io.quarkus:quarkus-resteasy": [
+    "Quarkus",
+    "framework",
+    5
+  ],
+  "org.jetbrains.kotlin:kotlin-stdlib": [
+    "Kotlin",
+    "language",
+    5
+  ]
+}

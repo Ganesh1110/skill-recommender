@@ -1,0 +1,17 @@
+{
+  "actix-web": [
+    "Actix Web",
+    "framework",
+    5
+  ],
+  "axum": [
+    "Axum",
+    "framework",
+    5
+  ],
+  "rocket": [
+    "Rocket",
+    "framework",
+    5
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "node": [
+    "Node.js",
+    "language",
+    5
+  ],
+  "python": [
+    "Python",
+    "language",
+    5
+  ],
+  "golang": [
+    "Go",
+    "language",
+    5
+  ],
+  "rust": [
+    "Rust",
+    "language",
+    5
+  ],
+  "openjdk": [
+    "Java",
+    "language",
+    5
+  ],
+  "eclipse-temurin": [
+    "Java",
+    "language",
+    5
+  ],
+  "ruby": [
+    "Ruby",
+    "language",
+    5
+  ],
+  "php": [
+    "PHP",
+    "language",
+    5
+  ],
+  "nginx": [
+    "Nginx",
+    "infra",
+    4
+  ],
+  "alpine": [
+    "Alpine Linux",
+    "infra",
+    3
+  ],
+  "ubuntu": [
+    "Ubuntu",
+    "infra",
+    3
+  ],
+  "debian": [
+    "Debian",
+    "infra",
+    3
+  ]
+}

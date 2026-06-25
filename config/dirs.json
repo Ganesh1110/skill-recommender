@@ -1,0 +1,22 @@
+{
+  ".github/workflows": [
+    "GitHub Actions",
+    "ci_cd",
+    5
+  ],
+  "kubernetes": [
+    "Kubernetes",
+    "infra",
+    5
+  ],
+  "k8s": [
+    "Kubernetes",
+    "infra",
+    5
+  ],
+  "helm": [
+    "Helm (K8s)",
+    "infra",
+    5
+  ]
+}

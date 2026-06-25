@@ -1,77 +1,190 @@
 # Skill Recommender
 
-A lightweight project that analyzes a software repository or config file to detect the tech stack and recommend the best installed skills for the project.
+Detects a project's tech stack from config files and natural language, then recommends the best AI skills to install. Zero dependencies — runs on Python 3.9+ stdlib.
 
-## What it does
-
-- Detects languages, frameworks, infrastructure, and AI-related libraries from project files.
-- Maps detected stack signals to installed skill recommendations.
-- Flags conflicts, missing skill coverage, and provides confidence-based output.
-- Supports structured JSON output for automation and pretty CLI output for humans.
-
-## Why this matters
-
-This repo is built for anyone who wants to:
-
-- analyze a codebase and understand its stack automatically
-- recommend the right skill or workflow for an AI assistant
-- validate skill coverage for frontend, backend, data, cloud, and AI use cases
-- make tech stack detection deterministic and repeatable
-
-## Included files
-
-- `scripts/detect_stack.py` — the detection engine that parses config files, package manifests, and directory structures
-- `scripts/run_tests.py` — test harness for validating the detector against example inputs
-- `SKILL.md` — project metadata, usage guidance, and the catalog of known stack signals
-- `references/stack-catalog.md` — extended stack catalog for less common frameworks and platform signals
-
-## How to use
-
-### Detect the stack
+## Quick Start
 
 ```bash
-python scripts/detect_stack.py <file_or_directory>
+# Analyze a project directory
+python3 scripts/detect_stack.py ./my-project/
+
+# Analyze a single config file
+python3 scripts/detect_stack.py package.json
+
+# Augment with a user message
+python3 scripts/detect_stack.py ./my-project/ --message "I need Docker deployment"
+
+# Message-only (no files)
+python3 scripts/detect_stack.py --message "I'm building a React app with FastAPI"
+
+# Pipe from stdin
+echo "I need Python ML" | python3 scripts/detect_stack.py --stdin
+
+# JSON output
+python3 scripts/detect_stack.py ./my-project/ --json
 ```
 
-Example:
+## What It Detects
+
+| Source | Examples | Confidence |
+|--------|----------|------------|
+| Config files | `package.json`, `requirements.txt`, `go.mod`, `Cargo.toml` | ★★★★★ |
+| User message | "I'm using React", "I need PDF generation" | ★★★★☆ |
+| Directory signals | `.github/workflows/`, `kubernetes/`, `helm/` | ★★★★★ |
+| File signals | `tsconfig.json`, `tailwind.config.*`, `Dockerfile` | ★★★★★ |
+
+### Supported Config Files
+
+| File | Language/Ecosystem |
+|------|--------------------|
+| `package.json` | Node.js / JavaScript |
+| `package-lock.json` | Node.js (lock file) |
+| `requirements.txt` | Python |
+| `pyproject.toml` | Python (Poetry/pip) |
+| `Pipfile` | Python (Pipenv) |
+| `go.mod` | Go |
+| `Cargo.toml` | Rust |
+| `pom.xml` | Java (Maven) |
+| `build.gradle` / `.kts` | Java/Kotlin (Gradle) |
+| `composer.json` | PHP |
+| `pubspec.yaml` | Dart/Flutter |
+| `Dockerfile` | Container images |
+| `docker-compose.yml` | Multi-container services |
+| `Gemfile` | Ruby |
+
+### Supported Directories
+
+| Directory | Signal |
+|-----------|--------|
+| `.github/workflows/` | GitHub Actions CI/CD |
+| `kubernetes/`, `k8s/` | Kubernetes |
+| `helm/` | Helm charts |
+
+### User Message Keywords
+
+The tool recognizes ~190 keywords including framework names, languages, categories, and tool names. Examples:
+
+- Explicit: "React", "FastAPI", "PostgreSQL", "Docker", "TypeScript"
+- Phrases: "React Native", "machine learning", "data pipeline", "GitHub Actions"
+- Vague: "frontend", "backend", "database", "mobile", "AI"
+
+## Output Format
+
+### Pretty-print (default)
+
+```
+==========================================================
+  skill-recommender
+  Source: ./my-project
+==========================================================
+
+  DETECTED STACK
+  --------------------------------------------------------
+  framework          ★★★★★  React
+                       └─ package.json › react
+  ui                 ★★★★★  Tailwind CSS
+                       └─ tailwind.config.ts
+
+==========================================================
+  RECOMMENDED SKILLS
+==========================================================
+
+  1. frontend-design
+     Priority : [Essential]  Score: 99/99
+     Why      : UI/UX design tokens, component patterns
+     Matched  : react, tailwind, ui
+     Install  :
+       curl -O https://raw.githubusercontent.com/.../frontend-design.skill
+```
+
+### JSON output (`--json`)
+
+```json
+{
+  "source": "./my-project",
+  "signals": [
+    {
+      "label": "React",
+      "category": "framework",
+      "confidence": 5,
+      "source": "package.json › react"
+    }
+  ],
+  "skill_matches": [
+    {
+      "skill": "frontend-design",
+      "score": 99,
+      "priority": "Essential",
+      "matched_triggers": ["react", "tailwind"],
+      "description": "UI/UX design tokens, component patterns"
+    }
+  ],
+  "conflicts": [],
+  "missing_skills": [],
+  "errors": []
+}
+```
+
+## CLI Options
+
+| Flag | Description |
+|------|-------------|
+| `--json` | Output JSON instead of pretty-print |
+| `--message TEXT` | Augment detection with a user message |
+| `--stdin` | Read user message from stdin |
+
+## Monorepo Support
+
+Recursively scans all subdirectories. Config files in nested packages are detected and attributed with their relative path:
+
+```
+framework          ★★★★★  React
+                     └─ apps/web/package.json › react
+framework          ★★★★★  Fastify
+                     └─ apps/api/package.json › fastify
+```
+
+Artifact directories (`node_modules`, `.git`, `dist`, `build`, etc.) are automatically excluded.
+
+## Running Tests
 
 ```bash
-python scripts/detect_stack.py package.json
+python3 scripts/run_tests.py              # all 14 tests
+python3 scripts/run_tests.py --test react_tailwind  # single test
+python3 scripts/run_tests.py --json       # JSON output
 ```
 
-### Get machine-readable JSON output
+## Project Structure
 
-```bash
-python scripts/detect_stack.py <file_or_directory> --json
+```
+skill-recommender/
+├── scripts/
+│   ├── detect_stack.py      # Detection engine
+│   └── run_tests.py         # Test harness (14 tests)
+├── config/
+│   ├── npm.json             # NPM package mappings
+│   ├── pip.json             # PyPI package mappings
+│   ├── go.json              # Go module mappings
+│   ├── cargo.json           # Rust crate mappings
+│   ├── pom.json             # Maven artifact mappings
+│   ├── composer.json        # Composer package mappings
+│   ├── pubspec.json         # Dart/Flutter mappings
+│   ├── docker.json          # Docker base image mappings
+│   ├── files.json           # Filename → signal mappings
+│   ├── dirs.json            # Directory → signal mappings
+│   └── keywords.json        # User message keywords
+├── SKILL.md                 # AI skill behavior guide
+├── references/
+│   └── stack-catalog.md     # Extended framework catalog
+├── LICENSE                  # MIT
+├── CONTRIBUTING.md          # Contribution guide
+└── README.md
 ```
 
-### Run tests
+## License
 
-```bash
-python scripts/run_tests.py
-```
+MIT — see [LICENSE](LICENSE).
 
-## Example scenarios
+## Contributing
 
-- `package.json` analysis for React/Next/Tailwind projects
-- `requirements.txt` analysis for Python ML or data workflows
-- `Dockerfile` or `docker-compose` detection for deployment and infra stacks
-- `go.mod`, `Cargo.toml`, `composer.json` for language-specific ecosystem signals
-
-## Shareable story for LinkedIn / Reddit
-
-This project is a simple, practical tool for making AI-driven skill recommendations more reliable. It is especially useful when you want to:
-
-- explain how to automatically choose the right assistant skill for a given repo
-- demonstrate deterministic stack detection from config files
-- show a reusable pattern for skill-aware tooling in AI-powered developer workflows
-
-## Notes
-
-- The repository is intentionally small and focused on deterministic detection.
-- `SKILL.md` is the canonical skill registry and usage guide for this project.
-- `references/stack-catalog.md` expands coverage for niche or enterprise frameworks.
-
----
-
-If you want, I can also help craft a ready-to-post LinkedIn or Reddit announcement text for this project.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.

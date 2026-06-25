@@ -1,0 +1,292 @@
+{
+  "fastapi": [
+    "FastAPI",
+    "framework",
+    5
+  ],
+  "uvicorn": [
+    "Uvicorn (ASGI)",
+    "framework",
+    4
+  ],
+  "django": [
+    "Django",
+    "framework",
+    5
+  ],
+  "flask": [
+    "Flask",
+    "framework",
+    5
+  ],
+  "starlette": [
+    "Starlette",
+    "framework",
+    4
+  ],
+  "pandas": [
+    "Pandas (data)",
+    "data_science",
+    5
+  ],
+  "numpy": [
+    "NumPy",
+    "data_science",
+    5
+  ],
+  "matplotlib": [
+    "Matplotlib",
+    "data_science",
+    4
+  ],
+  "seaborn": [
+    "Seaborn",
+    "data_science",
+    4
+  ],
+  "scikit-learn": [
+    "scikit-learn (ML)",
+    "ml",
+    5
+  ],
+  "sklearn": [
+    "scikit-learn (ML)",
+    "ml",
+    5
+  ],
+  "torch": [
+    "PyTorch",
+    "ml",
+    5
+  ],
+  "tensorflow": [
+    "TensorFlow",
+    "ml",
+    5
+  ],
+  "keras": [
+    "Keras",
+    "ml",
+    5
+  ],
+  "xgboost": [
+    "XGBoost",
+    "ml",
+    5
+  ],
+  "langchain": [
+    "LangChain",
+    "ai",
+    5
+  ],
+  "langchain-core": [
+    "LangChain",
+    "ai",
+    5
+  ],
+  "llama-index": [
+    "LlamaIndex",
+    "ai",
+    5
+  ],
+  "llama_index": [
+    "LlamaIndex",
+    "ai",
+    5
+  ],
+  "openai": [
+    "OpenAI SDK",
+    "ai",
+    5
+  ],
+  "anthropic": [
+    "Anthropic SDK",
+    "ai",
+    5
+  ],
+  "crewai": [
+    "CrewAI (agents)",
+    "ai",
+    5
+  ],
+  "autogen": [
+    "AutoGen (agents)",
+    "ai",
+    5
+  ],
+  "dspy": [
+    "DSPy",
+    "ai",
+    5
+  ],
+  "pydantic-ai": [
+    "PydanticAI",
+    "ai",
+    5
+  ],
+  "semantic-kernel": [
+    "Semantic Kernel",
+    "ai",
+    5
+  ],
+  "haystack": [
+    "Haystack (RAG)",
+    "ai",
+    5
+  ],
+  "dbt-core": [
+    "dbt",
+    "data_pipeline",
+    5
+  ],
+  "apache-airflow": [
+    "Airflow",
+    "data_pipeline",
+    5
+  ],
+  "prefect": [
+    "Prefect",
+    "data_pipeline",
+    5
+  ],
+  "dagster": [
+    "Dagster",
+    "data_pipeline",
+    5
+  ],
+  "pytest": [
+    "pytest",
+    "testing",
+    5
+  ],
+  "sqlalchemy": [
+    "SQLAlchemy ORM",
+    "database",
+    5
+  ],
+  "psycopg2": [
+    "PostgreSQL (psycopg2)",
+    "database",
+    5
+  ],
+  "pymongo": [
+    "MongoDB (pymongo)",
+    "database",
+    5
+  ],
+  "redis": [
+    "Redis",
+    "database",
+    4
+  ],
+  "celery": [
+    "Celery (task queue)",
+    "infra",
+    4
+  ],
+  "pydantic": [
+    "Pydantic",
+    "framework",
+    4
+  ],
+  "httpx": [
+    "HTTPX",
+    "framework",
+    3
+  ],
+  "requests": [
+    "Requests",
+    "framework",
+    3
+  ],
+  "streamlit": [
+    "Streamlit",
+    "framework",
+    5
+  ],
+  "python-docx": [
+    "Word generation (python-docx)",
+    "deliverable_docx",
+    5
+  ],
+  "docx": [
+    "Word generation",
+    "deliverable_docx",
+    5
+  ],
+  "reportlab": [
+    "PDF generation (reportlab)",
+    "deliverable_pdf",
+    5
+  ],
+  "weasyprint": [
+    "PDF generation (weasyprint)",
+    "deliverable_pdf",
+    5
+  ],
+  "fpdf2": [
+    "PDF generation (fpdf2)",
+    "deliverable_pdf",
+    5
+  ],
+  "fpdf": [
+    "PDF generation (fpdf)",
+    "deliverable_pdf",
+    5
+  ],
+  "pdfkit": [
+    "PDF generation (pdfkit)",
+    "deliverable_pdf",
+    5
+  ],
+  "openpyxl": [
+    "Excel generation (openpyxl)",
+    "deliverable_xlsx",
+    5
+  ],
+  "xlsxwriter": [
+    "Excel generation (xlsxwriter)",
+    "deliverable_xlsx",
+    5
+  ],
+  "xlrd": [
+    "Excel reading (xlrd)",
+    "deliverable_xlsx",
+    4
+  ],
+  "pymupdf": [
+    "PDF reading (pymupdf)",
+    "deliverable_pdf_read",
+    5
+  ],
+  "pdfplumber": [
+    "PDF reading (pdfplumber)",
+    "deliverable_pdf_read",
+    5
+  ],
+  "pypdf": [
+    "PDF reading (pypdf)",
+    "deliverable_pdf_read",
+    5
+  ],
+  "pypdf2": [
+    "PDF reading (pypdf2)",
+    "deliverable_pdf_read",
+    5
+  ],
+  "pptx": [
+    "Presentation (python-pptx)",
+    "deliverable_pptx",
+    5
+  ],
+  "python-pptx": [
+    "Presentation (python-pptx)",
+    "deliverable_pptx",
+    5
+  ],
+  "gradio": [
+    "Gradio",
+    "framework",
+    5
+  ]
+}

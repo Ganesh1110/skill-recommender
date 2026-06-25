@@ -1,0 +1,142 @@
+{
+  "go.mod": [
+    "Go",
+    "language",
+    5
+  ],
+  "Cargo.toml": [
+    "Rust",
+    "language",
+    5
+  ],
+  "Cargo.lock": [
+    "Rust",
+    "language",
+    5
+  ],
+  "pom.xml": [
+    "Java (Maven)",
+    "language",
+    5
+  ],
+  "build.gradle": [
+    "Java/Kotlin (Gradle)",
+    "language",
+    5
+  ],
+  "build.gradle.kts": [
+    "Kotlin (Gradle)",
+    "language",
+    5
+  ],
+  "tsconfig.json": [
+    "TypeScript",
+    "language",
+    5
+  ],
+  "tailwind.config.js": [
+    "Tailwind CSS",
+    "ui",
+    5
+  ],
+  "tailwind.config.ts": [
+    "Tailwind CSS",
+    "ui",
+    5
+  ],
+  "next.config.js": [
+    "Next.js",
+    "framework",
+    5
+  ],
+  "next.config.ts": [
+    "Next.js",
+    "framework",
+    5
+  ],
+  "turbo.json": [
+    "Turborepo monorepo",
+    "build_tool",
+    5
+  ],
+  "pnpm-workspace.yaml": [
+    "pnpm monorepo",
+    "build_tool",
+    5
+  ],
+  "pnpm-lock.yaml": [
+    "pnpm",
+    "build_tool",
+    5
+  ],
+  "lerna.json": [
+    "Lerna monorepo",
+    "build_tool",
+    5
+  ],
+  "yarn.lock": [
+    "yarn",
+    "build_tool",
+    5
+  ],
+  "Gemfile": [
+    "Ruby",
+    "language",
+    5
+  ],
+  "Gemfile.lock": [
+    "Ruby",
+    "language",
+    5
+  ],
+  "composer.json": [
+    "PHP",
+    "language",
+    5
+  ],
+  "pubspec.yaml": [
+    "Dart/Flutter",
+    "language",
+    5
+  ],
+  "Package.swift": [
+    "Swift",
+    "language",
+    5
+  ],
+  "mix.exs": [
+    "Elixir",
+    "language",
+    5
+  ],
+  "mix.lock": [
+    "Elixir",
+    "language",
+    5
+  ],
+  "poetry.lock": [
+    "Poetry",
+    "build_tool",
+    5
+  ],
+  "sln": [
+    "C# (.NET)",
+    "language",
+    5
+  ],
+  "*.tf": [
+    "Terraform",
+    "infra",
+    5
+  ],
+  "Jenkinsfile": [
+    "Jenkins CI/CD",
+    "ci_cd",
+    5
+  ],
+  ".circleci": [
+    "CircleCI",
+    "ci_cd",
+    5
+  ]
+}
