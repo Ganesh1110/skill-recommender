@@ -12,6 +12,7 @@ Usage:
 
 import sys
 import json
+import hashlib
 import unittest
 from pathlib import Path
 
@@ -25,6 +26,7 @@ from detect_stack import (
     parse_pnpm_lock, parse_poetry_lock, parse_cargo_lock,
     parse_gemfile, parse_build_gradle, parse_mix_exs,
     parse_user_message, match_skills, detect_conflicts,
+    _compute_dir_fingerprint, _get_cache_path, __version__,
 )
 
 
@@ -406,6 +408,213 @@ class TestDetectConflicts(unittest.TestCase):
         ]
         conflicts = detect_conflicts(signals)
         self.assertTrue(len(conflicts) > 0)
+        self.assertEqual(conflicts[0]["category"], "framework")
+
+    def test_database_conflict(self):
+        signals = [
+            {"label": "PostgreSQL", "category": "database"},
+            {"label": "MySQL", "category": "database"},
+            {"label": "MongoDB", "category": "database"},
+        ]
+        conflicts = detect_conflicts(signals)
+        db_conflicts = [c for c in conflicts if c["category"] == "database"]
+        self.assertTrue(len(db_conflicts) > 0)
+
+    def test_database_no_conflict_with_orm(self):
+        signals = [
+            {"label": "PostgreSQL", "category": "database"},
+            {"label": "SQLAlchemy ORM", "category": "database"},
+        ]
+        conflicts = detect_conflicts(signals)
+        db_conflicts = [c for c in conflicts if c["category"] == "database"]
+        self.assertEqual(len(db_conflicts), 0)
+
+    def test_build_tool_conflict(self):
+        signals = [
+            {"label": "Webpack", "category": "build_tool"},
+            {"label": "Vite", "category": "build_tool"},
+            {"label": "Turborepo", "category": "build_tool"},
+        ]
+        conflicts = detect_conflicts(signals)
+        build_conflicts = [c for c in conflicts if c["category"] == "build_tool"]
+        self.assertTrue(len(build_conflicts) > 0)
+
+    def test_ui_conflict(self):
+        signals = [
+            {"label": "Tailwind CSS", "category": "ui"},
+            {"label": "Bootstrap", "category": "ui"},
+        ]
+        conflicts = detect_conflicts(signals)
+        ui_conflicts = [c for c in conflicts if c["category"] == "ui"]
+        self.assertTrue(len(ui_conflicts) > 0)
+
+    def test_testing_conflict(self):
+        signals = [
+            {"label": "Playwright (E2E)", "category": "testing"},
+            {"label": "Cypress (E2E)", "category": "testing"},
+        ]
+        conflicts = detect_conflicts(signals)
+        test_conflicts = [c for c in conflicts if c["category"] == "testing"]
+        self.assertTrue(len(test_conflicts) > 0)
+
+    def test_ci_cd_conflict(self):
+        signals = [
+            {"label": "GitHub Actions", "category": "ci_cd"},
+            {"label": "CircleCI", "category": "ci_cd"},
+        ]
+        conflicts = detect_conflicts(signals)
+        ci_conflicts = [c for c in conflicts if c["category"] == "ci_cd"]
+        self.assertTrue(len(ci_conflicts) > 0)
+
+
+class TestMatchSkillsExplain(unittest.TestCase):
+    def test_explain_output(self):
+        signals = [
+            {"label": "React", "category": "framework", "confidence": 5, "source": "package.json"},
+            {"label": "Tailwind CSS", "category": "ui", "confidence": 5, "source": "package.json"},
+        ]
+        results = match_skills(signals, explain=True)
+        frontend = next(r for r in results if r["skill"] == "frontend-design")
+        self.assertIn("explanation", frontend)
+        self.assertTrue(len(frontend["explanation"]) > 0)
+
+    def test_no_explain_by_default(self):
+        signals = [{"label": "React", "category": "framework", "confidence": 5, "source": "test"}]
+        results = match_skills(signals)
+        frontend = next(r for r in results if r["skill"] == "frontend-design")
+        self.assertNotIn("explanation", frontend)
+
+
+class TestVersion(unittest.TestCase):
+    def test_version_exists(self):
+        self.assertIsInstance(__version__, str)
+        self.match(r'^\d+\.\d+\.\d+$', __version__)
+
+    def match(self, pattern, string):
+        import re
+        self.assertTrue(re.match(pattern, string), f"Version '{string}' does not match pattern '{pattern}'")
+
+
+class TestCachePath(unittest.TestCase):
+    def test_cache_path_deterministic(self):
+        path1 = _get_cache_path("/tmp/test/project")
+        path2 = _get_cache_path("/tmp/test/project")
+        self.assertEqual(path1, path2)
+
+    def test_cache_path_different_for_different_dirs(self):
+        path1 = _get_cache_path("/tmp/test/project1")
+        path2 = _get_cache_path("/tmp/test/project2")
+        self.assertNotEqual(path1, path2)
+
+    def test_cache_in_global_dir(self):
+        from detect_stack import GLOBAL_CACHE_DIR
+        path = _get_cache_path("/tmp/test")
+        self.assertTrue(str(path).startswith(str(GLOBAL_CACHE_DIR)))
+
+
+class TestParseEdgeCases(unittest.TestCase):
+    def test_empty_package_json(self):
+        signals, errors = parse_package_json("{}")
+        self.assertEqual(len(signals), 0)
+        self.assertEqual(len(errors), 0)
+
+    def test_empty_requirements(self):
+        signals, errors = parse_requirements("")
+        self.assertEqual(len(signals), 0)
+
+    def test_empty_composer_json(self):
+        signals, errors = parse_composer_json("{}")
+        self.assertEqual(len(signals), 0)
+
+    def test_empty_go_mod(self):
+        signals, errors = parse_go_mod("")
+        self.assertEqual(len(signals), 0)
+
+    def test_empty_cargo_toml(self):
+        signals, errors = parse_cargo_toml("")
+        self.assertEqual(len(signals), 0)
+
+    def test_empty_pom_xml(self):
+        signals, errors = parse_pom_xml("")
+        self.assertEqual(len(signals), 0)
+
+    def test_empty_dockerfile(self):
+        signals, errors = parse_dockerfile("")
+        self.assertEqual(len(signals), 0)
+
+    def test_invalid_yaml_pubspec(self):
+        signals, errors = parse_pubspec_yaml("not: valid: yaml: [[[")
+        # Should not crash, may return empty
+        self.assertIsInstance(signals, list)
+
+    def test_malformed_package_lock(self):
+        signals, errors = parse_package_lock("{not valid json")
+        self.assertEqual(len(signals), 0)
+        self.assertTrue(len(errors) > 0)
+
+    def test_malformed_composer_json(self):
+        signals, errors = parse_composer_json("{not valid json")
+        self.assertEqual(len(signals), 0)
+        self.assertTrue(len(errors) > 0)
+
+    def test_user_message_empty(self):
+        signals = parse_user_message("")
+        self.assertEqual(len(signals), 0)
+
+    def test_user_message_special_chars(self):
+        signals = parse_user_message("I need a @#$%^&*() app")
+        # Should not crash
+        self.assertIsInstance(signals, list)
+
+
+class TestFingerprint(unittest.TestCase):
+    def test_fingerprint_deterministic(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Create a minimal config file
+            (Path(tmpdir) / "package.json").write_text('{"dependencies": {}}')
+            fp1 = _compute_dir_fingerprint(tmpdir)
+            fp2 = _compute_dir_fingerprint(tmpdir)
+            self.assertEqual(fp1, fp2)
+
+    def test_fingerprint_changes_with_content(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pkg = Path(tmpdir) / "package.json"
+            pkg.write_text('{"dependencies": {"react": "1.0"}}')
+            fp1 = _compute_dir_fingerprint(tmpdir)
+            pkg.write_text('{"dependencies": {"vue": "3.0"}}')
+            fp2 = _compute_dir_fingerprint(tmpdir)
+            self.assertNotEqual(fp1, fp2)
+
+    def test_fingerprint_handles_missing_dir(self):
+        fp = _compute_dir_fingerprint("/nonexistent/path/that/does/not/exist")
+        self.assertEqual(fp, hashlib.sha256(b"").hexdigest()[:32])
+
+
+class TestDetectMultipleConflicts(unittest.TestCase):
+    def test_multiple_conflict_categories(self):
+        signals = [
+            {"label": "React", "category": "framework"},
+            {"label": "Vue", "category": "framework"},
+            {"label": "PostgreSQL", "category": "database"},
+            {"label": "MySQL", "category": "database"},
+            {"label": "Webpack", "category": "build_tool"},
+            {"label": "Vite", "category": "build_tool"},
+        ]
+        conflicts = detect_conflicts(signals)
+        categories = {c["category"] for c in conflicts}
+        self.assertIn("framework", categories)
+        self.assertIn("database", categories)
+        self.assertIn("build_tool", categories)
+
+    def test_single_item_no_conflict(self):
+        signals = [
+            {"label": "React", "category": "framework"},
+            {"label": "PostgreSQL", "category": "database"},
+        ]
+        conflicts = detect_conflicts(signals)
+        self.assertEqual(len(conflicts), 0)
 
 
 if __name__ == "__main__":

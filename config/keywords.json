@@ -964,5 +964,725 @@
     "Go",
     "language",
     3
+  ],
+  [
+    "dashboard",
+    "Dashboard",
+    "ui",
+    3
+  ],
+  [
+    "chart",
+    "Chart",
+    "data_science",
+    3
+  ],
+  [
+    "graph",
+    "Graph Visualization",
+    "data_science",
+    2
+  ],
+  [
+    "visualization",
+    "Visualization",
+    "data_science",
+    3
+  ],
+  [
+    "report generation",
+    "Report Generation",
+    "deliverable_pdf",
+    3
+  ],
+  [
+    "pdf generation",
+    "PDF Generation",
+    "deliverable_pdf",
+    3
+  ],
+  [
+    "word document",
+    "Word Document",
+    "deliverable_docx",
+    3
+  ],
+  [
+    "excel spreadsheet",
+    "Excel Spreadsheet",
+    "deliverable_xlsx",
+    3
+  ],
+  [
+    "powerpoint",
+    "PowerPoint",
+    "deliverable_pptx",
+    3
+  ],
+  [
+    "presentation",
+    "Presentation",
+    "deliverable_pptx",
+    2
+  ],
+  [
+    "api",
+    "API",
+    "api",
+    2
+  ],
+  [
+    "rest",
+    "REST API",
+    "api",
+    2
+  ],
+  [
+    "graphql",
+    "GraphQL",
+    "api",
+    3
+  ],
+  [
+    "websocket",
+    "WebSocket",
+    "api",
+    3
+  ],
+  [
+    "real-time",
+    "Real-time",
+    "api",
+    2
+  ],
+  [
+    "websocket",
+    "WebSocket",
+    "api",
+    3
+  ],
+  [
+    "authentication",
+    "Authentication",
+    "framework",
+    2
+  ],
+  [
+    "auth",
+    "Authentication",
+    "framework",
+    2
+  ],
+  [
+    "oauth",
+    "OAuth",
+    "framework",
+    3
+  ],
+  [
+    "jwt",
+    "JWT",
+    "framework",
+    3
+  ],
+  [
+    "cron",
+    "Scheduled Jobs",
+    "infra",
+    2
+  ],
+  [
+    "queue",
+    "Message Queue",
+    "infra",
+    2
+  ],
+  [
+    "redis queue",
+    "Redis Queue",
+    "infra",
+    3
+  ],
+  [
+    "celery",
+    "Celery",
+    "infra",
+    3
+  ],
+  [
+    "background jobs",
+    "Background Jobs",
+    "infra",
+    2
+  ],
+  [
+    "worker",
+    "Worker",
+    "infra",
+    2
+  ],
+  [
+    "serverless",
+    "Serverless",
+    "cloud",
+    3
+  ],
+  [
+    "lambda",
+    "AWS Lambda",
+    "cloud",
+    4
+  ],
+  [
+    "cloud functions",
+    "Cloud Functions",
+    "cloud",
+    3
+  ],
+  [
+    "edge",
+    "Edge Computing",
+    "cloud",
+    2
+  ],
+  [
+    "cdn",
+    "CDN",
+    "cloud",
+    2
+  ],
+  [
+    "monitoring",
+    "Monitoring",
+    "devops",
+    2
+  ],
+  [
+    "logging",
+    "Logging",
+    "devops",
+    2
+  ],
+  [
+    "observability",
+    "Observability",
+    "devops",
+    3
+  ],
+  [
+    "prometheus",
+    "Prometheus",
+    "devops",
+    3
+  ],
+  [
+    "grafana",
+    "Grafana",
+    "devops",
+    3
+  ],
+  [
+    "elk",
+    "ELK Stack",
+    "devops",
+    3
+  ],
+  [
+    "security",
+    "Security",
+    "devops",
+    2
+  ],
+  [
+    "auth0",
+    "Auth0",
+    "framework",
+    3
+  ],
+  [
+    "firebase auth",
+    "Firebase Auth",
+    "framework",
+    3
+  ],
+  [
+    "supabase auth",
+    "Supabase Auth",
+    "framework",
+    3
+  ],
+  [
+    "stripe",
+    "Stripe",
+    "framework",
+    3
+  ],
+  [
+    "payment",
+    "Payment",
+    "framework",
+    2
+  ],
+  [
+    "ecommerce",
+    "E-commerce",
+    "framework",
+    2
+  ],
+  [
+    "shop",
+    "Shop",
+    "framework",
+    2
+  ],
+  [
+    "store",
+    "Store",
+    "framework",
+    2
+  ],
+  [
+    "blog",
+    "Blog",
+    "framework",
+    2
+  ],
+  [
+    "cms",
+    "CMS",
+    "framework",
+    2
+  ],
+  [
+    "wiki",
+    "Wiki",
+    "framework",
+    2
+  ],
+  [
+    "chat",
+    "Chat",
+    "framework",
+    2
+  ],
+  [
+    "messaging",
+    "Messaging",
+    "framework",
+    2
+  ],
+  [
+    "notification",
+    "Notification",
+    "framework",
+    2
+  ],
+  [
+    "email",
+    "Email",
+    "framework",
+    2
+  ],
+  [
+    "calendar",
+    "Calendar",
+    "framework",
+    2
+  ],
+  [
+    "scheduling",
+    "Scheduling",
+    "framework",
+    2
+  ],
+  [
+    "form",
+    "Form",
+    "ui",
+    2
+  ],
+  [
+    "input",
+    "Input",
+    "ui",
+    2
+  ],
+  [
+    "modal",
+    "Modal",
+    "ui",
+    2
+  ],
+  [
+    "dialog",
+    "Dialog",
+    "ui",
+    2
+  ],
+  [
+    "table",
+    "Table",
+    "ui",
+    2
+  ],
+  [
+    "data table",
+    "Data Table",
+    "ui",
+    2
+  ],
+  [
+    "navigation",
+    "Navigation",
+    "ui",
+    2
+  ],
+  [
+    "sidebar",
+    "Sidebar",
+    "ui",
+    2
+  ],
+  [
+    "header",
+    "Header",
+    "ui",
+    2
+  ],
+  [
+    "footer",
+    "Footer",
+    "ui",
+    2
+  ],
+  [
+    "layout",
+    "Layout",
+    "ui",
+    2
+  ],
+  [
+    "responsive",
+    "Responsive",
+    "ui",
+    2
+  ],
+  [
+    "mobile first",
+    "Mobile First",
+    "ui",
+    2
+  ],
+  [
+    "dark mode",
+    "Dark Mode",
+    "ui",
+    3
+  ],
+  [
+    "theme",
+    "Theme",
+    "ui",
+    2
+  ],
+  [
+    "design system",
+    "Design System",
+    "ui",
+    3
+  ],
+  [
+    "component library",
+    "Component Library",
+    "ui",
+    3
+  ],
+  [
+    "storybook",
+    "Storybook",
+    "testing",
+    3
+  ],
+  [
+    "snapshot",
+    "Snapshot Testing",
+    "testing",
+    3
+  ],
+  [
+    "e2e",
+    "E2E Testing",
+    "testing",
+    3
+  ],
+  [
+    "integration test",
+    "Integration Testing",
+    "testing",
+    3
+  ],
+  [
+    "unit test",
+    "Unit Testing",
+    "testing",
+    3
+  ],
+  [
+    "tdd",
+    "TDD",
+    "testing",
+    3
+  ],
+  [
+    "bdd",
+    "BDD",
+    "testing",
+    3
+  ],
+  [
+    "coverage",
+    "Test Coverage",
+    "testing",
+    3
+  ],
+  [
+    "linting",
+    "Linting",
+    "testing",
+    2
+  ],
+  [
+    "eslint",
+    "ESLint",
+    "testing",
+    3
+  ],
+  [
+    "prettier",
+    "Prettier",
+    "testing",
+    3
+  ],
+  [
+    "formatting",
+    "Formatting",
+    "testing",
+    2
+  ],
+  [
+    "ci",
+    "CI",
+    "ci_cd",
+    2
+  ],
+  [
+    "cd",
+    "CD",
+    "ci_cd",
+    2
+  ],
+  [
+    "pipeline",
+    "Pipeline",
+    "ci_cd",
+    2
+  ],
+  [
+    "deploy",
+    "Deployment",
+    "devops",
+    2
+  ],
+  [
+    "container",
+    "Container",
+    "devops",
+    2
+  ],
+  [
+    "k8s",
+    "Kubernetes",
+    "infra",
+    3
+  ],
+  [
+    "helm chart",
+    "Helm Chart",
+    "infra",
+    3
+  ],
+  [
+    "terraform",
+    "Terraform",
+    "infra",
+    3
+  ],
+  [
+    "iac",
+    "Infrastructure as Code",
+    "infra",
+    3
+  ],
+  [
+    "ansible",
+    "Ansible",
+    "infra",
+    3
+  ],
+  [
+    "puppet",
+    "Puppet",
+    "infra",
+    3
+  ],
+  [
+    "chef",
+    "Chef",
+    "infra",
+    3
+  ],
+  [
+    "vagrant",
+    "Vagrant",
+    "infra",
+    3
+  ],
+  [
+    "virtual machine",
+    "Virtual Machine",
+    "infra",
+    2
+  ],
+  [
+    "vm",
+    "Virtual Machine",
+    "infra",
+    2
+  ],
+  [
+    "bare metal",
+    "Bare Metal",
+    "infra",
+    2
+  ],
+  [
+    "on-premise",
+    "On-Premise",
+    "infra",
+    2
+  ],
+  [
+    "hybrid cloud",
+    "Hybrid Cloud",
+    "cloud",
+    3
+  ],
+  [
+    "multi cloud",
+    "Multi Cloud",
+    "cloud",
+    3
+  ],
+  [
+    "cloud native",
+    "Cloud Native",
+    "cloud",
+    3
+  ],
+  [
+    "microservice",
+    "Microservices",
+    "architecture",
+    2
+  ],
+  [
+    "monolith",
+    "Monolith",
+    "architecture",
+    2
+  ],
+  [
+    "event driven",
+    "Event Driven",
+    "architecture",
+    3
+  ],
+  [
+    "cqrs",
+    "CQRS",
+    "architecture",
+    3
+  ],
+  [
+    "event sourcing",
+    "Event Sourcing",
+    "architecture",
+    3
+  ],
+  [
+    "ddd",
+    "Domain Driven Design",
+    "architecture",
+    3
+  ],
+  [
+    "clean architecture",
+    "Clean Architecture",
+    "architecture",
+    3
+  ],
+  [
+    "hexagonal",
+    "Hexagonal Architecture",
+    "architecture",
+    3
+  ],
+  [
+    "mvc",
+    "MVC",
+    "architecture",
+    3
+  ],
+  [
+    "mvvm",
+    "MVVM",
+    "architecture",
+    3
+  ],
+  [
+    "mvp",
+    "MVP",
+    "architecture",
+    2
+  ],
+  [
+    "serverless",
+    "Serverless",
+    "cloud",
+    3
+  ],
+  [
+    "faas",
+    "Function as a Service",
+    "cloud",
+    3
+  ],
+  [
+    "paas",
+    "Platform as a Service",
+    "cloud",
+    3
+  ],
+  [
+    "iaas",
+    "Infrastructure as a Service",
+    "cloud",
+    3
+  ],
+  [
+    "saas",
+    "Software as a Service",
+    "cloud",
+    2
   ]
 ]

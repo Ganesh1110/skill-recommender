@@ -12,6 +12,8 @@ Usage:
 Output: JSON with detected signals, confidence scores, conflicts, and skill matches.
 """
 
+__version__ = "1.1.0"
+
 import sys
 import json
 import re
@@ -21,7 +23,7 @@ from pathlib import Path
 
 # ── Config loading ────────────────────────────────────────────────────────────
 CONFIG_DIR = Path(__file__).parent.parent / "config"
-CACHE_FILE = ".skill-recommender-cache.json"
+GLOBAL_CACHE_DIR = Path.home() / ".cache" / "skill-recommender"
 
 
 def _load_config(filename, default=None):
@@ -1083,9 +1085,17 @@ def _compute_dir_fingerprint(path):
     return hashlib.sha256("\n".join(fingerprint_parts).encode()).hexdigest()[:32]
 
 
+def _get_cache_path(path):
+    """Get the cache file path for a given directory, stored in global cache."""
+    abs_path = Path(path).resolve()
+    # Create a safe filename from the absolute path
+    path_hash = hashlib.sha256(str(abs_path).encode()).hexdigest()[:16]
+    return GLOBAL_CACHE_DIR / f"{path_hash}.json"
+
+
 def _load_cache(path):
     """Load cached scan result if fingerprint matches."""
-    cache_path = Path(path) / CACHE_FILE
+    cache_path = _get_cache_path(path)
     if not cache_path.exists():
         return None
     try:
@@ -1101,8 +1111,9 @@ def _load_cache(path):
 
 def _save_cache(path, result):
     """Save scan result with current fingerprint for cache invalidation."""
-    cache_path = Path(path) / CACHE_FILE
+    cache_path = _get_cache_path(path)
     try:
+        GLOBAL_CACHE_DIR.mkdir(parents=True, exist_ok=True)
         with open(cache_path, "w", encoding="utf-8") as f:
             json.dump({
                 "fingerprint": _compute_dir_fingerprint(path),
@@ -1112,7 +1123,7 @@ def _save_cache(path, result):
         pass  # Non-critical — ignore cache write failures
 
 
-def scan_directory(path):
+def scan_directory(path, exclude_dirs=None, use_cache=True):
     """Scan a directory for known config files and aggregate signals.
 
     Uses os.walk(followlinks=False) to prevent symlink traversal attacks.
@@ -1121,14 +1132,20 @@ def scan_directory(path):
     Uses file-based caching keyed on directory fingerprint.
     """
     # Check cache first
-    cached = _load_cache(path)
-    if cached is not None:
-        return cached
+    if use_cache:
+        cached = _load_cache(path)
+        if cached is not None:
+            return cached
 
     signals = []
     errors = []
     conflicts = []
     p = Path(path)
+
+    # Merge user excludes with defaults
+    skip_dirs = set(ARTIFACT_DIRS)
+    if exclude_dirs:
+        skip_dirs.update(exclude_dirs)
 
     # Build lookup tables
     file_signals = {}
@@ -1173,7 +1190,7 @@ def scan_directory(path):
 
     for root, dirs, files in os.walk(str(p), followlinks=False):
         # Prune artifact directories in-place (os.walk respects this)
-        dirs[:] = [d for d in dirs if d not in ARTIFACT_DIRS]
+        dirs[:] = [d for d in dirs if d not in skip_dirs]
 
         root_path = Path(root)
         try:
@@ -1285,7 +1302,8 @@ def scan_directory(path):
                     errors.append(f"Could not read {fname} at {rel_path}: {ex}")
 
     # Cache the result before returning
-    _save_cache(path, (signals, errors, conflicts))
+    if use_cache:
+        _save_cache(path, (signals, errors, conflicts))
     return signals, errors, conflicts
 
 
@@ -1297,8 +1315,8 @@ def detect_conflicts(signals):
         cat = s["category"]
         by_category.setdefault(cat, []).append(s)
 
-    framework_labels = [s["label"] for s in by_category.get("framework", [])]
     # Flag competing frontend frameworks
+    framework_labels = [s["label"] for s in by_category.get("framework", [])]
     frontend = [l for l in framework_labels if any(
         f in l for f in ["React", "Vue", "Angular", "Svelte"])]
     if len(set(frontend)) > 1:
@@ -1306,6 +1324,64 @@ def detect_conflicts(signals):
             "category": "framework",
             "signals": frontend,
             "resolution": f"Highest-confidence signal wins. Using: {frontend[0]}"
+        })
+
+    # Flag competing database systems
+    db_signals = by_category.get("database", [])
+    db_labels = list({s["label"] for s in db_signals})
+    if len(db_labels) > 1:
+        # Only flag if they are truly different databases (not ORM + database)
+        orm_keywords = {"orm", "prisma", "sqlalchemy", "mongoose", "drizzle", "sequelize", "typeorm"}
+        real_dbs = [l for l in db_labels if not any(kw in l.lower() for kw in orm_keywords)]
+        if len(real_dbs) > 1:
+            conflicts.append({
+                "category": "database",
+                "signals": real_dbs,
+                "resolution": f"Multiple databases detected: {', '.join(real_dbs)}. Verify all are intentional."
+            })
+
+    # Flag competing build tools
+    build_signals = by_category.get("build_tool", [])
+    build_labels = list({s["label"] for s in build_signals})
+    if len(build_labels) > 1:
+        conflicts.append({
+            "category": "build_tool",
+            "signals": build_labels,
+            "resolution": f"Multiple build tools detected: {', '.join(build_labels)}. May indicate monorepo or migration."
+        })
+
+    # Flag competing UI libraries
+    ui_signals = by_category.get("ui", [])
+    ui_labels = list({s["label"] for s in ui_signals})
+    ui_frameworks = [l for l in ui_labels if any(
+        f in l.lower() for f in ["tailwind", "bootstrap", "material", "chakra", "antd", "shadcn"])]
+    if len(ui_frameworks) > 1:
+        conflicts.append({
+            "category": "ui",
+            "signals": ui_frameworks,
+            "resolution": f"Multiple UI frameworks detected: {', '.join(ui_frameworks)}. May cause style conflicts."
+        })
+
+    # Flag competing testing frameworks (same type)
+    test_signals = by_category.get("testing", [])
+    test_labels = list({s["label"] for s in test_signals})
+    e2e_frameworks = [l for l in test_labels if any(
+        f in l.lower() for f in ["playwright", "cypress", "selenium"])]
+    if len(e2e_frameworks) > 1:
+        conflicts.append({
+            "category": "testing",
+            "signals": e2e_frameworks,
+            "resolution": f"Multiple E2E frameworks detected: {', '.join(e2e_frameworks)}. Unify for consistency."
+        })
+
+    # Flag competing CI/CD systems
+    ci_signals = by_category.get("ci_cd", [])
+    ci_labels = list({s["label"] for s in ci_signals})
+    if len(ci_labels) > 1:
+        conflicts.append({
+            "category": "ci_cd",
+            "signals": ci_labels,
+            "resolution": f"Multiple CI/CD systems detected: {', '.join(ci_labels)}. Standardize for simplicity."
         })
 
     return conflicts
@@ -1357,7 +1433,7 @@ def _trigger_matches_signal(trigger, signal):
     return False
 
 
-def match_skills(signals):
+def match_skills(signals, explain=False):
     """Score each installed skill against detected signals.
 
     Uses word-boundary and prefix matching to avoid false positives while
@@ -1369,6 +1445,7 @@ def match_skills(signals):
         score = 0.0
         matched = []
         matched_signal_labels = set()
+        explanation_parts = []
 
         for trigger in meta["triggers"]:
             for s in signals:
@@ -1378,6 +1455,11 @@ def match_skills(signals):
                     if s["label"] not in matched_signal_labels:
                         score += s["confidence"] * weight
                         matched_signal_labels.add(s["label"])
+                        if explain:
+                            explanation_parts.append(
+                                f"{s['label']} ({s['source']}) matched trigger '{trigger}' "
+                                f"[confidence={s['confidence']}, weight={weight:.2f}]"
+                            )
                     matched.append(trigger)
                     break  # one match per trigger is enough
 
@@ -1386,13 +1468,16 @@ def match_skills(signals):
             # Scale so that ~4.5 = Essential (60+), ~2.5 = Helpful (30+), <2.5 = Optional
             normalised = min(int(score * 14), 99)
             priority = "Essential" if normalised >= 60 else ("Helpful" if normalised >= 30 else "Optional")
-            results.append({
+            result = {
                 "skill": skill_name,
                 "score": normalised,
                 "priority": priority,
                 "matched_triggers": matched,
                 "description": meta["description"]
-            })
+            }
+            if explain:
+                result["explanation"] = explanation_parts
+            results.append(result)
 
     results.sort(key=lambda x: x["score"], reverse=True)
     return results
@@ -1419,13 +1504,13 @@ def detect_missing_skills(signals):
     return gaps
 
 
-def run(source=None, user_message=None):
+def run(source=None, user_message=None, exclude_dirs=None, use_cache=True, explain=False):
     signals, errors, conflicts = [], [], []
 
     if source:
         p = Path(source)
         if p.is_dir():
-            signals, errors, conflicts = scan_directory(p)
+            signals, errors, conflicts = scan_directory(p, exclude_dirs=exclude_dirs, use_cache=use_cache)
         elif p.is_file():
             content = p.read_text(encoding="utf-8", errors="replace")
             name = p.name
@@ -1486,7 +1571,7 @@ def run(source=None, user_message=None):
         signals.extend(msg_signals)
 
     conflicts = detect_conflicts(signals)
-    skill_matches = match_skills(signals)
+    skill_matches = match_skills(signals, explain=explain)
     missing = detect_missing_skills(signals)
 
     # Deduplicate signals by label + category (keep highest confidence)
@@ -1545,7 +1630,7 @@ def install_cmd(skill_name):
     return ["Check: Claude Desktop -> Settings -> Skills"]
 
 
-def pretty_print(result):
+def pretty_print(result, explain=False):
     W = 58
 
     # Header
@@ -1597,6 +1682,10 @@ def pretty_print(result):
             print(f"     Priority : {badge}  Score: {match['score']}/99")
             print(f"     Why      : {match['description']}")
             print(f"     Matched  : {', '.join(match['matched_triggers'])}")
+            if explain and match.get("explanation"):
+                print(f"     Explain  :")
+                for exp in match["explanation"]:
+                    print(f"       - {exp}")
             print(f"     Install  :")
             for line in install_cmd(match["skill"]):
                 print(f"       {line}")
@@ -1630,7 +1719,7 @@ def pretty_print(result):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 2 or "--help" in sys.argv or "-h" in sys.argv:
         print("Usage: python detect_stack.py <file_or_directory> [options]")
         print("       python detect_stack.py --message \"I'm building a React app\"")
         print("       echo \"I need Python ML\" | python detect_stack.py --stdin")
@@ -1639,12 +1728,37 @@ if __name__ == "__main__":
         print("  --message TEXT   Augment detection with a user message")
         print("  --stdin          Read user message from stdin")
         print("  --json           Output JSON instead of pretty-print")
-        sys.exit(1)
+        print("  --explain        Show why each skill was recommended")
+        print("  --exclude DIR    Exclude directory from scanning (repeatable)")
+        print("  --no-cache       Skip reading/writing the cache file")
+        print("  --version        Show version and exit")
+        print("  --help, -h       Show this help message and exit")
+        sys.exit(0)
+
+    if "--version" in sys.argv:
+        print(f"skill-recommender {__version__}")
+        sys.exit(0)
 
     source = None
     user_message = None
     as_json = "--json" in sys.argv
     use_stdin = "--stdin" in sys.argv
+    explain = "--explain" in sys.argv
+    use_cache = "--no-cache" not in sys.argv
+
+    # Collect --exclude directories
+    exclude_dirs = []
+    args = sys.argv[1:]
+    i = 0
+    while i < len(args):
+        if args[i] == "--exclude" and i + 1 < len(args):
+            exclude_dirs.append(args[i + 1])
+            i += 2
+        elif args[i].startswith("--exclude="):
+            exclude_dirs.append(args[i].split("=", 1)[1])
+            i += 1
+        else:
+            i += 1
 
     # Extract --message argument
     if "--message" in sys.argv:
@@ -1659,8 +1773,8 @@ if __name__ == "__main__":
     i = 1
     while i < len(sys.argv):
         arg = sys.argv[i]
-        if arg == "--message":
-            i += 2  # skip --message and its value
+        if arg in ("--message", "--exclude"):
+            i += 2  # skip flag and its value
             continue
         if arg.startswith("--"):
             i += 1
@@ -1672,9 +1786,10 @@ if __name__ == "__main__":
         print("Error: provide a file/directory path or --message/--stdin", file=sys.stderr)
         sys.exit(1)
 
-    result = run(source, user_message)
+    result = run(source, user_message, exclude_dirs=exclude_dirs or None,
+                 use_cache=use_cache, explain=explain)
 
     if as_json:
         print(json.dumps(result, indent=2))
     else:
-        pretty_print(result)
+        pretty_print(result, explain=explain)

@@ -256,11 +256,53 @@ TEST_CASES = [
         "forbidden_skills": [],
         "expected_priority": {}
     },
+    {
+        "name": "version_flag",
+        "description": "--version flag prints version",
+        "input_type": "version_flag",
+        "input": "",
+        "expected_signals": [],
+        "expected_skills": [],
+        "forbidden_skills": [],
+        "expected_priority": {}
+    },
+    {
+        "name": "exclude_flag",
+        "description": "--exclude skips specified directories",
+        "input_type": "directory",
+        "input": {
+            "package.json": json.dumps({
+                "dependencies": {"react": "^18.0.0"}
+            }),
+            "excluded-dir/package.json": json.dumps({
+                "dependencies": {"vue": "^3.0.0"}
+            }),
+        },
+        "expected_signals": ["React"],
+        "forbidden_signals": ["Vue"],
+        "expected_skills": ["frontend-design"],
+        "forbidden_skills": [],
+        "expected_priority": {},
+        "cli_args": ["--exclude", "excluded-dir"]
+    },
 ]
 
 
 def run_detection(test_case):
     """Run detect_stack.py against a test case, return parsed JSON result."""
+
+    if test_case["input_type"] == "version_flag":
+        try:
+            result = subprocess.run(
+                [sys.executable, str(DETECT_SCRIPT), "--version"],
+                capture_output=True, text=True, timeout=10
+            )
+            if result.returncode != 0:
+                return None, result.stderr
+            # Parse version from output
+            return {"version_output": result.stdout.strip()}, None
+        except Exception as e:
+            return None, str(e)
 
     if test_case["input_type"] == "directory":
         tmp_dir = Path(tempfile.mkdtemp())
@@ -269,8 +311,12 @@ def run_detection(test_case):
                 full_path = tmp_dir / filepath
                 full_path.parent.mkdir(parents=True, exist_ok=True)
                 full_path.write_text(content, encoding="utf-8")
+            cmd = [sys.executable, str(DETECT_SCRIPT), str(tmp_dir), "--json"]
+            # Add any extra CLI args
+            if "cli_args" in test_case:
+                cmd.extend(test_case["cli_args"])
             result = subprocess.run(
-                [sys.executable, str(DETECT_SCRIPT), str(tmp_dir), "--json"],
+                cmd,
                 capture_output=True, text=True, timeout=30
             )
             if result.returncode != 0:
@@ -349,6 +395,14 @@ def score_test(test_case, detection_result):
     """Score a single test case. Returns (passed, score, details)."""
     if not detection_result:
         return False, 0, ["Detection failed — no output"]
+
+    # Special handling for version_flag test
+    if test_case["input_type"] == "version_flag":
+        version_output = detection_result.get("version_output", "")
+        if "skill-recommender" in version_output and any(c.isdigit() for c in version_output):
+            return True, 100, [f"  ✅ Version output: {version_output}"]
+        else:
+            return False, 0, [f"  ❌ Unexpected version output: {version_output}"]
 
     matched_skills = {m["skill"] for m in detection_result.get("skill_matches", [])}
     skill_priority = {

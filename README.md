@@ -132,6 +132,11 @@ The tool recognizes ~190 keywords including framework names, languages, categori
 | `--json` | Output JSON instead of pretty-print |
 | `--message TEXT` | Augment detection with a user message |
 | `--stdin` | Read user message from stdin |
+| `--explain` | Show why each skill was recommended (signal → trigger matches) |
+| `--exclude DIR` | Exclude a directory from scanning (repeatable) |
+| `--no-cache` | Skip reading/writing the cache file |
+| `--version` | Show version and exit |
+| `--help`, `-h` | Show help message and exit |
 
 ## Monorepo Support
 
@@ -149,7 +154,7 @@ Artifact directories (`node_modules`, `.git`, `dist`, `build`, etc.) are automat
 ## Running Tests
 
 ```bash
-python3 scripts/run_tests.py              # all 14 tests
+python3 scripts/run_tests.py              # all 16 tests
 python3 scripts/run_tests.py --test react_tailwind  # single test
 python3 scripts/run_tests.py --json       # JSON output
 ```
@@ -177,6 +182,7 @@ skill-recommender/
 ├── references/
 │   └── stack-catalog.md     # Extended framework catalog
 ├── LICENSE                  # MIT
+├── ROADMAP.md               # Future development roadmap
 ├── CONTRIBUTING.md          # Contribution guide
 └── README.md
 ```
@@ -184,6 +190,10 @@ skill-recommender/
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+## Roadmap
+
+See [ROADMAP.md](ROADMAP.md) for the prioritized development plan across v1.1 (immediate), v1.2 (near-term), and v2.0 (long-term).
 
 ## Contributing
 
